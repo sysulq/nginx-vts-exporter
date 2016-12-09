@@ -290,21 +290,21 @@ func (e *Exporter) scrape() {
 		e.serverMetrics["cache"].WithLabelValues(host, "stale").Set(float64(s.Responses.Stale))
 		e.serverMetrics["cache"].WithLabelValues(host, "updating").Set(float64(s.Responses.Updating))
 
-		e.serverMetrics["bytes"].WithLabelValues(host, "in").Add(float64(s.InBytes))
-		e.serverMetrics["bytes"].WithLabelValues(host, "out").Add(float64(s.OutBytes))
+		e.serverMetrics["bytes"].WithLabelValues(host, "in").Set(float64(s.InBytes))
+		e.serverMetrics["bytes"].WithLabelValues(host, "out").Set(float64(s.OutBytes))
 	}
 
 	for name, upstreamList := range nginxVtx.UpstreamZones {
 		for _, s := range upstreamList {
 			e.upstreamMetrics["requests"].WithLabelValues(name, "total").Set(float64(s.RequestCounter))
-			e.upstreamMetrics["requests"].WithLabelValues(name, "1xx").Add(float64(s.Responses.OneXx))
-			e.upstreamMetrics["requests"].WithLabelValues(name, "2xx").Add(float64(s.Responses.TwoXx))
-			e.upstreamMetrics["requests"].WithLabelValues(name, "3xx").Add(float64(s.Responses.ThreeXx))
-			e.upstreamMetrics["requests"].WithLabelValues(name, "4xx").Add(float64(s.Responses.FourXx))
-			e.upstreamMetrics["requests"].WithLabelValues(name, "5xx").Add(float64(s.Responses.FiveXx))
+			e.upstreamMetrics["requests"].WithLabelValues(name, "1xx").Set(float64(s.Responses.OneXx))
+			e.upstreamMetrics["requests"].WithLabelValues(name, "2xx").Set(float64(s.Responses.TwoXx))
+			e.upstreamMetrics["requests"].WithLabelValues(name, "3xx").Set(float64(s.Responses.ThreeXx))
+			e.upstreamMetrics["requests"].WithLabelValues(name, "4xx").Set(float64(s.Responses.FourXx))
+			e.upstreamMetrics["requests"].WithLabelValues(name, "5xx").Set(float64(s.Responses.FiveXx))
 
-			e.upstreamMetrics["bytes"].WithLabelValues(name, "in").Add(float64(s.InBytes))
-			e.upstreamMetrics["bytes"].WithLabelValues(name, "out").Add(float64(s.OutBytes))
+			e.upstreamMetrics["bytes"].WithLabelValues(name, "in").Set(float64(s.InBytes))
+			e.upstreamMetrics["bytes"].WithLabelValues(name, "out").Set(float64(s.OutBytes))
 		}
 	}
 
