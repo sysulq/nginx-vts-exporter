@@ -16,8 +16,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-package main
-
 type NginxVts struct {
 	NginxVersion string `json:"nginxVersion"`
 	LoadMsec     int64  `json:"loadMsec"`
