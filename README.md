@@ -20,3 +20,21 @@ Run
 ```
 nohup ./nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
 ```
+
+Dockerize
+--
+
+Build
+```
+docker build -t vts-export .
+```
+Run
+```
+docker run -ti vts-export
+```
+
+Run with args
+```
+docker run -ti vts-export -nginx.scrape_uri=http://localhost/status/format/json
+```
+
