@@ -144,7 +144,7 @@ type Exporter struct {
 	serverMetrics, upstreamMetrics, cacheMetrics map[string]*prometheus.GaugeVec
 }
 
-func newServerMetric(metricName string, docString string, labels []string) *prometheus.GaugeVec {
+func newServerMetric(metricName string, docString string, labels []string, namespace string) *prometheus.GaugeVec {
 	return prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: namespace,
@@ -155,7 +155,7 @@ func newServerMetric(metricName string, docString string, labels []string) *prom
 	)
 }
 
-func newUpstreamMetric(metricName string, docString string, labels []string) *prometheus.GaugeVec {
+func newUpstreamMetric(metricName string, docString string, labels []string, namespace string) *prometheus.GaugeVec {
 	return prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: namespace,
@@ -166,7 +166,7 @@ func newUpstreamMetric(metricName string, docString string, labels []string) *pr
 	)
 }
 
-func newCacheMetric(metricName string, docString string, labels []string) *prometheus.GaugeVec {
+func newCacheMetric(metricName string, docString string, labels []string, namespace string) *prometheus.GaugeVec {
 	return prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: namespace,
@@ -177,23 +177,23 @@ func newCacheMetric(metricName string, docString string, labels []string) *prome
 	)
 }
 
-func NewExporter(uri string) *Exporter {
+func NewExporter(uri string, namespace string) *Exporter {
 
 	return &Exporter{
 		URI: uri,
 		serverMetrics: map[string]*prometheus.GaugeVec{
-			"connections": newServerMetric("connections", "nginx connections", []string{"status"}),
-			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code"}),
-			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction"}),
-			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status"}),
+			"connections": newServerMetric("connections", "nginx connections", []string{"status"}, namespace),
+			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code"}, namespace),
+			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction"}, namespace),
+			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status"}, namespace),
 		},
 		upstreamMetrics: map[string]*prometheus.GaugeVec{
-			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}),
-			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
+			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}, namespace),
+			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}, namespace),
 		},
 		cacheMetrics: map[string]*prometheus.GaugeVec{
-			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status"}),
-			"bytes":    newCacheMetric("bytes", "cache request/response bytes", []string{"zone", "direction"}),
+			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status"}, namespace),
+			"bytes":    newCacheMetric("bytes", "cache request/response bytes", []string{"zone", "direction"}, namespace),
 		},
 	}
 }
@@ -342,6 +342,7 @@ func fetchHTTP(uri string, timeout time.Duration) func() (io.ReadCloser, error) 
 var (
 	listenAddress   = flag.String("telemetry.address", ":9913", "Address on which to expose metrics.")
 	metricsEndpoint = flag.String("telemetry.endpoint", "/metrics", "Path under which to expose metrics.")
+	metricsNamespace = flag.String("metrics.namespace", "nginx", "Prometheus metrics namespace.")
 	nginxScrapeURI  = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
 	insecure        = flag.Bool("insecure", true, "Ignore server certificate if using https")
 )
@@ -349,7 +350,7 @@ var (
 func main() {
 	flag.Parse()
 
-	exporter := NewExporter(*nginxScrapeURI)
+	exporter := NewExporter(*nginxScrapeURI, *metricsNamespace)
 	prometheus.MustRegister(exporter)
 	prometheus.Unregister(prometheus.NewProcessCollector(os.Getpid(), ""))
 	prometheus.Unregister(prometheus.NewGoCollector())
@@ -365,6 +366,9 @@ func main() {
 			</html>`))
 	})
 
-	log.Printf("Starting Server: %s", *listenAddress)
+	log.Printf("Starting Server at : %s", *listenAddress)
+	log.Printf("Metrics endpoint: %s", *metricsEndpoint)
+	log.Printf("Metrics namespace: %s", *metricsNamespace)
+	log.Printf("Scraping information from : %s", *nginxScrapeURI)
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
 }
