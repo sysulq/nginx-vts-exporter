@@ -12,6 +12,6 @@ ENV NGIX_HOST http://localhost
 ENV METRICS_ENDPOINT "/metrics"
 ENV METRICS_ADDR ":9913"
 
-EXPOSE 9113
+EXPOSE 9913
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
