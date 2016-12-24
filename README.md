@@ -1,40 +1,41 @@
-nginx-vts-exporter
+#nginx-vts-exporter
 ===
 Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometheus consumption
 
-Dependency
+#Dependency
 ---
 * [nginx-module-vts](https://github.com/vozlt/nginx-module-vts)
 * [Prometheus](https://prometheus.io/)
 * [Golang](https://golang.org/)
 
-Compile
+#Compile
 ---
 ```
-go get -v ./...
-go build
+$ ./build-binary.sh
 ```
+This shell script above will build a temp Docker image with the binary and then
+export the binary inside ./bin/ directory
 
-Run
+#Run
 ---
 ```
-nohup ./nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
+$ nohup /bin/nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
 ```
 
-Dockerize
+#Dockerize
 --
 
-Build
+##Build
 ```
-docker build -t vts-export .
+$ ./build-binary.sh
+$ docker build -t vts-export .
 ```
-Run
+##Run
 ```
 docker run -ti vts-export
 ```
 
-Run with args
+##Run with args
 ```
 docker run -ti vts-export -nginx.scrape_uri=http://localhost/status/format/json
 ```
-
