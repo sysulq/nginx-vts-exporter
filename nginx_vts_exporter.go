@@ -340,7 +340,7 @@ func fetchHTTP(uri string, timeout time.Duration) func() (io.ReadCloser, error) 
 }
 
 var (
-	listenAddress   = flag.String("telemetry.address", ":9113", "Address on which to expose metrics.")
+	listenAddress   = flag.String("telemetry.address", ":9913", "Address on which to expose metrics.")
 	metricsEndpoint = flag.String("telemetry.endpoint", "/metrics", "Path under which to expose metrics.")
 	metricsNamespace = flag.String("metrics.namespace", "nginx", "Prometheus metrics namespace.")
 	nginxScrapeURI  = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
