@@ -5,7 +5,7 @@ bin_diretory=`pwd`/bin
 
 echo "[Step 1] - Building binary inside image"
 docker build --tag=$tag_name \
-             --file=Dockerfile-build . >/dev/null
+             --file=Dockerfile-build . 
 
 echo "[Step 2] - Copying the binary from docker image"
 docker run --rm --volume=$bin_diretory:/output $tag_name cp /build/nginx-vts-exporter /output/nginx-vts-exporter >/dev/null 2>&1

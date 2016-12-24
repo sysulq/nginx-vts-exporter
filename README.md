@@ -32,6 +32,7 @@ Variable name | Default     | Description
 NGINX_STATUS |  http://localhost/status/format/json | Nginx JSON format status page
 METRICS_ENDPOINT | /metrics  | Metrics endpoint exportation URI
 METRICS_ADDR | :9913 | Metrics exportation address:port
+METRICS_NS | nginx | Prometheus metrics Namespaces
 
 
 ##Build
@@ -42,5 +43,6 @@ $ docker build -t vts-export .
 
 ##Run
 ```
-docker run --rm --env NGIX_HOST="http://localhost/status/format/json" -ti vts-export
+docker run  -ti --rm --env NGIX_HOST="http://localhost/status/format/json" --env METRICS_NS="nginx_prod1" vts-export
+
 ```
