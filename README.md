@@ -8,6 +8,14 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 * [Prometheus](https://prometheus.io/)
 * [Golang](https://golang.org/)
 
+#Download
+Binary can be downloaded from `bin` directory
+
+SHA512 Sum
+```
+5ef43e64c47a60d44539682f645adf01beede42f855b746bb1e2b07e44e67ad279ea525d4786bc9c17a434933dfce7e48455ba05176e422c5db2831e4f284962  nginx-vts-exporter
+```
+
 #Compile
 
 ```
