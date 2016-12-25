@@ -11,6 +11,7 @@ import (
 	"os"
 	"sync"
 	"time"
+  "strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -135,6 +136,11 @@ type Cache struct {
 	} `json:"overCounts"`
 }
 
+func FloatToString(input_num float64) string {
+    // to convert a float number to a string
+    return strconv.FormatFloat(input_num, 'f', 6, 64)
+}
+
 const namespace = "nginx"
 
 type Exporter struct {
@@ -190,6 +196,8 @@ func NewExporter(uri string, namespace string) *Exporter {
 		upstreamMetrics: map[string]*prometheus.GaugeVec{
 			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}, namespace),
 			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}, namespace),
+			"response":    newUpstreamMetric("response", "request response time", []string{"upstream_name", "host", "in_bytes", "out_bytes"}, namespace),
+
 		},
 		cacheMetrics: map[string]*prometheus.GaugeVec{
 			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status"}, namespace),
@@ -305,6 +313,8 @@ func (e *Exporter) scrape() {
 
 			e.upstreamMetrics["bytes"].WithLabelValues(name, "in").Add(float64(s.InBytes))
 			e.upstreamMetrics["bytes"].WithLabelValues(name, "out").Add(float64(s.OutBytes))
+
+			e.upstreamMetrics["response"].WithLabelValues(name, s.Server, FloatToString(float64(s.InBytes)), FloatToString(float64(s.OutBytes))).Add(float64(s.ResponseMsec))
 		}
 	}
 
