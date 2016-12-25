@@ -11,9 +11,9 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 #Download
 Binary can be downloaded from `bin` directory
 
-SHA512 Sum
 ```
-5ef43e64c47a60d44539682f645adf01beede42f855b746bb1e2b07e44e67ad279ea525d4786bc9c17a434933dfce7e48455ba05176e422c5db2831e4f284962  nginx-vts-exporter
+# SHA512 Sum
+2004df2bd2a0dcca870bf259c6a2f49d58f2d759fa2a66d31f6a6d1876e08f774be122027eadbf5cb3b26042d998af6c1a5e3d80c41471a805415382e3f09f61  bin/nginx-vts-exporter
 ```
 
 #Compile
