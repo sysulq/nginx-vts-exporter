@@ -54,5 +54,4 @@ $ docker build -t vts-export .
 ##Run
 ```
 docker run  -ti --rm --env NGIX_HOST="http://localhost/status/format/json" --env METRICS_NS="nginx_prod1" vts-export
-
 ```
