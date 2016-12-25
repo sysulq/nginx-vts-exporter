@@ -9,7 +9,8 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 * [Golang](https://golang.org/)
 
 #Download
-Binary can be downloaded from `bin` directory
+Binary can be downloaded from `bin` directory.
+Latest version v0.0.3
 
 ```
 # SHA512 Sum
