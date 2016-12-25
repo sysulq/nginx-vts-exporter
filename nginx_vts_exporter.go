@@ -196,7 +196,7 @@ func NewExporter(uri string, namespace string) *Exporter {
 		upstreamMetrics: map[string]*prometheus.GaugeVec{
 			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}, namespace),
 			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}, namespace),
-			"response":    newUpstreamMetric("response", "request response time", []string{"upstream_name", "host", "in_bytes", "out_bytes"}, namespace),
+			"response":    newUpstreamMetric("response", "request response time", []string{"upstream", "backend", "in_bytes", "out_bytes"}, namespace),
 
 		},
 		cacheMetrics: map[string]*prometheus.GaugeVec{
