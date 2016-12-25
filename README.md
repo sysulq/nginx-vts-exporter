@@ -27,7 +27,6 @@ To Dockerize this application yo need to pass two steps the build then the conta
 
 ## Environment variables
 This image is configurable using different env variables
-
 Variable name | Default     | Description
 ------------- | ----------- | --------------
 NGINX_STATUS |  http://localhost/status/format/json | Nginx JSON format status page
