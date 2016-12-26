@@ -40,7 +40,7 @@ Nginx data         | Name                            | Exposed informations
  **Requests**      | `{NAMESPACE}_upstream_requests` | code [2xx, 3xx, 4xx, 5xx and total], upstream _(or upstream name)_
  **Bytes**         | `{NAMESPACE}_upstream_bytes`    | direction [in, out], upstream _(or upstream name)_
  **Response time** | `{NAMESPACE}_upstream_response` | backend (or server), in_bytes, out_bytes, upstream _(or upstream name)_
- ~~Requests/sec~~  | `NOT EXPORTED YET`              |
+ **Requests/sec**  | `NOT EXPORTED YET`              |
 
 ##Metrics output example
 ```
@@ -51,5 +51,5 @@ nginx_upstream_requests{code="1xx",upstream="XXX-XXXXX-3000"} 0
 nginx_upstream_bytes{direction="in",upstream="XXX-XXXXX-3000"} 0
 
 # Upstream Response time
-nginx_upstream_response{host="10.2.15.10:3000",in_bytes="285025.000000",out_bytes="447594.000000",upstream="XXX-XXXXX-3000"} 99
+nginx_upstream_response{backend="10.2.15.10:3000",upstream="XXX-XXXXX-3000"} 99
 ```

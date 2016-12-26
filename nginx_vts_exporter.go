@@ -196,7 +196,7 @@ func NewExporter(uri string, namespace string) *Exporter {
 		upstreamMetrics: map[string]*prometheus.GaugeVec{
 			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}, namespace),
 			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}, namespace),
-			"response":    newUpstreamMetric("response", "request response time", []string{"upstream", "backend", "in_bytes", "out_bytes"}, namespace),
+			"response":    newUpstreamMetric("response", "request response time", []string{"upstream", "backend"}, namespace),
 
 		},
 		cacheMetrics: map[string]*prometheus.GaugeVec{
@@ -314,7 +314,7 @@ func (e *Exporter) scrape() {
 			e.upstreamMetrics["bytes"].WithLabelValues(name, "in").Add(float64(s.InBytes))
 			e.upstreamMetrics["bytes"].WithLabelValues(name, "out").Add(float64(s.OutBytes))
 
-			e.upstreamMetrics["response"].WithLabelValues(name, s.Server, FloatToString(float64(s.InBytes)), FloatToString(float64(s.OutBytes))).Add(float64(s.ResponseMsec))
+			e.upstreamMetrics["response"].WithLabelValues(name, s.Server).Add(float64(s.ResponseMsec))
 		}
 	}
 
