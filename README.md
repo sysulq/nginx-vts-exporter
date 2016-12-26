@@ -14,7 +14,7 @@ Latest version v0.0.3
 
 ```
 # SHA512 Sum
-2004df2bd2a0dcca870bf259c6a2f49d58f2d759fa2a66d31f6a6d1876e08f774be122027eadbf5cb3b26042d998af6c1a5e3d80c41471a805415382e3f09f61  bin/nginx-vts-exporter
+16eec84a6496529ef76a83af54f659111abecca6bcb4b2edd0b327223f93e735ae4aca2078bf4c41fded831c3d116170b277d194af64074f45992191e3a7bfb6  bin/nginx-vts-exporter
 ```
 
 #Compile
