@@ -1,19 +1,18 @@
-FROM golang:alpine
+FROM alpine:3.4
 
-#RUN apt-get update &&\
-#    rm -rf /var/lib/apt/lists
-RUN apk --no-cache --update add git ca-certificates
-WORKDIR $GOPATH/src/app/
-ADD . . 
-RUN go get -v
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o nginx-vts-exporter .
-RUN mv $GOPATH/src/app/nginx-vts-exporter /
-COPY ./docker-entrypoint.sh /
+# Creating directory for our application
+RUN mkdir /app
 
-EXPOSE 9113
+# Copying entrypoint script
+COPY ./docker-entrypoint.sh /app/
+# Copying VTS Metrics exporter binary
+COPY bin/nginx-vts-exporter /app/
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/nginx-vts-exporter"]
-#, "-nginx.scrape_uri=http://localhost/status/format/json"]
+ENV NGIX_HOST http://localhost
+ENV METRICS_ENDPOINT "/metrics"
+ENV METRICS_ADDR ":9913"
+ENV DEFAULT_METRICS_NS "nginx"
 
-#CMD ["$GOPATH/src/app/nginx-vts-exporter"] 
+EXPOSE 9913
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

@@ -1,40 +1,57 @@
-nginx-vts-exporter
-===
+#nginx-vts-exporter
+
 Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometheus consumption
 
-Dependency
----
+#Dependency
+
 * [nginx-module-vts](https://github.com/vozlt/nginx-module-vts)
 * [Prometheus](https://prometheus.io/)
 * [Golang](https://golang.org/)
 
-Compile
----
+#Download
+Binary can be downloaded from `bin` directory.
+Latest version v0.0.3
+
 ```
-go get -v ./...
-go build
+# SHA512 Sum
+16eec84a6496529ef76a83af54f659111abecca6bcb4b2edd0b327223f93e735ae4aca2078bf4c41fded831c3d116170b277d194af64074f45992191e3a7bfb6  bin/nginx-vts-exporter
 ```
 
-Run
----
+#Compile
+
 ```
-nohup ./nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
+$ ./build-binary.sh
+```
+This shell script above will build a temp Docker image with the binary and then
+export the binary inside ./bin/ directory
+
+#Run
+
+```
+$ nohup /bin/nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
 ```
 
-Dockerize
---
+#Dockerized
+To Dockerize this application yo need to pass two steps the build then the containerization.
 
-Build
+## Environment variables
+This image is configurable using different env variables
+
+Variable name | Default     | Description
+------------- | ----------- | --------------
+NGINX_STATUS |  http://localhost/status/format/json | Nginx JSON format status page
+METRICS_ENDPOINT | /metrics  | Metrics endpoint exportation URI
+METRICS_ADDR | :9913 | Metrics exportation address:port
+METRICS_NS | nginx | Prometheus metrics Namespaces
+
+
+##Build
 ```
-docker build -t vts-export .
-```
-Run
-```
-docker run -ti vts-export
+$ ./build-binary.sh
+$ docker build -t vts-export .
 ```
 
-Run with args
+##Run
 ```
-docker run -ti vts-export -nginx.scrape_uri=http://localhost/status/format/json
+docker run  -ti --rm --env NGIX_HOST="http://localhost/status/format/json" --env METRICS_NS="nginx_prod1" vts-export
 ```
-
