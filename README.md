@@ -24,9 +24,9 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 
 ## Download
 Binary can be downloaded from `bin` directory.
-Latest version v0.0.3
+Latest version v0.3
 
-``` shell
+``` txt
 # SHA512 Sum
 16eec84a6496529ef76a83af54f659111abecca6bcb4b2edd0b327223f93e735ae4aca2078bf4c41fded831c3d116170b277d194af64074f45992191e3a7bfb6  bin/nginx-vts-exporter
 ```
@@ -77,7 +77,7 @@ docker run  -ti --rm --env NGIX_HOST="http://localhost/status/format/json" --env
 
 ## Metrics
 
-This file contain documentation about exposed Prometheus metrics
+Documents about exposed Prometheus metrics
 
 ### Server main
 
@@ -126,7 +126,6 @@ Nginx data         | Name                            | Exposed informations
  **Requests**      | `{NAMESPACE}_upstream_requests` | code [2xx, 3xx, 4xx, 5xx and total], upstream _(or upstream name)_
  **Bytes**         | `{NAMESPACE}_upstream_bytes`    | direction [in, out], upstream _(or upstream name)_
  **Response time** | `{NAMESPACE}_upstream_response` | backend (or server), in_bytes, out_bytes, upstream _(or upstream name)_
- **Requests/sec**  | `NOT EXPORTED YET`              |
 
 **Metrics output example**
 
