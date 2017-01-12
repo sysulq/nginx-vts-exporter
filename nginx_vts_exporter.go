@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -134,11 +133,6 @@ type Cache struct {
 		Hit            int     `json:"hit"`
 		Scarce         int     `json:"scarce"`
 	} `json:"overCounts"`
-}
-
-func FloatToString(input_num float64) string {
-	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', 6, 64)
 }
 
 type Exporter struct {
