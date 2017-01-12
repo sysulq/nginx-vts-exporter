@@ -23,13 +23,8 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 * [Golang](https://golang.org/)
 
 ## Download
-Binary can be downloaded from `bin` directory.
-Latest version v0.3
 
-``` txt
-# SHA512 Sum
-16eec84a6496529ef76a83af54f659111abecca6bcb4b2edd0b327223f93e735ae4aca2078bf4c41fded831c3d116170b277d194af64074f45992191e3a7bfb6  bin/nginx-vts-exporter
-```
+Binary can be downloaded from [Releases](https://github.com/hnlq715/nginx-vts-exporter/releases) page.
 
 ## Compile
 
