@@ -6,7 +6,7 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 * [Dependency](#dependency)
 * [Download](#download)
 * [Compile](#compile)
-* [Run)(#run)
+* [Run](#run)
 * [Dockerized](#dockerized)
   * [Environment variables](#environment-variables)
   * [Docker Build](#docker-build)
