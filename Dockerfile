@@ -5,8 +5,6 @@ RUN mkdir /app
 
 # Copying entrypoint script
 COPY ./docker-entrypoint.sh /app/
-# Copying VTS Metrics exporter binary
-COPY bin/nginx-vts-exporter /app/
 
 ENV NGIX_HOST http://localhost
 ENV METRICS_ENDPOINT "/metrics"
