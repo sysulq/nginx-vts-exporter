@@ -56,6 +56,12 @@ METRICS_ENDPOINT | /metrics  | Metrics endpoint exportation URI
 METRICS_ADDR | :9913 | Metrics exportation address:port
 METRICS_NS | nginx | Prometheus metrics Namespaces
 
+## Docker Hub Image
+``` shell
+docker pull sophos/nginx-vts-exporter:latest
+```
+It can be used directly instead of having to build the image yourself.
+([Docker Hub sophos/nginx-vts-exporter](https://hub.docker.com/r/sophos/nginx-vts-exporter/))
 
 ### Docker Build
 
