@@ -4,7 +4,12 @@ binary="/app/nginx-vts-exporter"
 default_status="$NGIX_HOST/status/format/json"
 NGINX_STATUS=${NGINX_STATUS:-$default_status}
 METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
+VERSION=${VERSION:-$DEFAULT_VERSION}
 
+wget https://github.com/hnlq715/nginx-vts-exporter/releases/download/${VERSION}/nginx-vts-exporter-linux-amd64.tar.gz
+tar xf nginx-vts-exporter-linux-amd64.tar.gz
+mv nginx-vts-exporter-linux-amd64 $binary
+rm nginx-vts-exporter-linux-amd64.tar.gz
 # If there are any arguments then we want to run those instead
 #if [[ "$1" == "$binary" || -z $1 ]]; then
 #  exec "$@"
@@ -15,5 +20,6 @@ METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
 #echo "[$0] - Metrics Endpoint  --> [$METRICS_ENDPOINT]"
 #echo "[$0] - Metrics Namespace  --> [$METRICS_NS]"
 #echo "[$0] - Running metrics nginx-vts-exporter"
+
 exec "$binary" -nginx.scrape_uri=$NGINX_STATUS -telemetry.address $METRICS_ADDR -telemetry.endpoint $METRICS_ENDPOINT -metrics.namespace $METRICS_NS
 #fi
