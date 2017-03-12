@@ -173,8 +173,8 @@ func NewExporter(uri string) *Exporter {
 			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
-			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}),
-			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
+			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "backend"}),
+			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction", "backend"}),
 			"response": newUpstreamMetric("response", "request response time", []string{"upstream", "backend"}),
 		},
 		cacheMetrics: map[string]*prometheus.Desc{
@@ -264,17 +264,18 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 			outbytes += float64(s.OutBytes)
 
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["response"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
+
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, total, name, "total", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, one, name, "1xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, two, name, "2xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, three, name, "3xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, four, name, "4xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, five, name, "5xx", s.Server)
+
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, inbytes, name, "in", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, outbytes, name, "out", s.Server)
+
 		}
-
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, total, name, "total")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, one, name, "1xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, two, name, "2xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, three, name, "3xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, four, name, "4xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, five, name, "5xx")
-
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, inbytes, name, "in")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, outbytes, name, "out")
 	}
 
 	// CacheZones
