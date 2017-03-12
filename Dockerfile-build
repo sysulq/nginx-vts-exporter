@@ -1,9 +1,0 @@
-FROM golang:alpine
-
-RUN apk --no-cache --update add git ca-certificates
-WORKDIR $GOPATH/src/app/
-ADD . .
-RUN go get -v
-RUN mkdir /build
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o nginx-vts-exporter .
-RUN mv $GOPATH/src/app/nginx-vts-exporter /build/
