@@ -6,10 +6,7 @@ NGINX_STATUS=${NGINX_STATUS:-$default_status}
 METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
 VERSION=${VERSION:-$DEFAULT_VERSION}
 
-wget https://github.com/hnlq715/nginx-vts-exporter/releases/download/${VERSION}/nginx-vts-exporter-linux-amd64.tar.gz
-tar xf nginx-vts-exporter-linux-amd64.tar.gz
-mv nginx-vts-exporter-linux-amd64 $binary
-rm nginx-vts-exporter-linux-amd64.tar.gz
+
 # If there are any arguments then we want to run those instead
 #if [[ "$1" == "$binary" || -z $1 ]]; then
 #  exec "$@"
