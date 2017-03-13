@@ -1,6 +1,7 @@
 FROM        quay.io/prometheus/busybox:latest
 MAINTAINER  Sophos <hnlq.sysu@gmail.com>
 
+RUN make build
 COPY nginx_vts_exporter /bin/nginx_vts_exporter
 COPY ./docker-entrypoint.sh /bin/docker-entrypoint.sh
 
