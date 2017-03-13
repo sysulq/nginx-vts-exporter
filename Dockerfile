@@ -1,8 +1,8 @@
 FROM        quay.io/prometheus/busybox:latest
 MAINTAINER  Sophos <hnlq.sysu@gmail.com>
 
-RUN tar xf ./bin/nginx_vts_exporter.tar.gz
-COPY nginx_vts_exporter /bin/nginx_vts_exporter
+COPY ./bin/nginx_vts_exporter.tar.gz /bin/
+RUN tar xf /bin/nginx_vts_exporter.tar.gz /bin/nginx_vts_exporter
 COPY docker-entrypoint.sh /bin/docker-entrypoint.sh
 
 ENV NGIX_HOST "http://localhost"
