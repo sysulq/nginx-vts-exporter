@@ -1,7 +1,7 @@
 FROM        quay.io/prometheus/busybox:latest
 MAINTAINER  Sophos <hnlq.sysu@gmail.com>
 
-RUN tar xf ./bin/nginx_vts_exporter.tag.gz
+RUN tar xf ./bin/nginx_vts_exporter.tar.gz
 COPY nginx_vts_exporter /bin/nginx_vts_exporter
 COPY docker-entrypoint.sh /bin/docker-entrypoint.sh
 
