@@ -1,12 +1,15 @@
 # nginx-vts-exporter
 
+[![Docker Repository on Quay](https://quay.io/repository/hnlq715/nginx-vts-exporter/status)][quay]
+[![Docker Pulls](https://img.shields.io/docker/pulls/sophos/nginx-vts-exporter.svg)][hub]
+
 Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometheus consumption
 
 ## Table of Contents
 * [Dependency](#dependency)
 * [Download](#download)
 * [Compile](#compile)
-* [Run](#run)
+* [Run](#run) 
 * [Dockerized](#dockerized)
   * [Environment variables](#environment-variables)
   * [Docker Build](#docker-build)
