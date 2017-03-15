@@ -17,5 +17,5 @@ tar xf /bin/nginx-vts-exporter.tar.gz -C /bin/
 #echo "[$0] - Metrics Namespace  --> [$METRICS_NS]"
 #echo "[$0] - Running metrics nginx-vts-exporter"
 
-exec "$binary" -nginx.scrape_uri=$NGINX_STATUS -telemetry.address $METRICS_ADDR -telemetry.endpoint $METRICS_ENDPOINT -metrics.namespace $METRICS_NS
+exec /bin/nginx-vts-exporter -nginx.scrape_uri=$NGINX_STATUS -telemetry.address $METRICS_ADDR -telemetry.endpoint $METRICS_ENDPOINT -metrics.namespace $METRICS_NS
 #fi
