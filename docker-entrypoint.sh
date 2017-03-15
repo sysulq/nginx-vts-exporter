@@ -1,11 +1,10 @@
 #!/bin/sh
 set -eo pipefail
-binary="/bin/nginx-vts-exporter"
 default_status="$NGIX_HOST/status/format/json"
 NGINX_STATUS=${NGINX_STATUS:-$default_status}
 METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
 
-tar xf $binary.tar.gz $binary
+tar xf /bin/nginx-vts-exporter.tar.gz -C /bin/
 
 # If there are any arguments then we want to run those instead
 #if [[ "$1" == "$binary" || -z $1 ]]; then
