@@ -3,7 +3,8 @@ MAINTAINER  Sophos <hnlq.sysu@gmail.com>
 
 WORKDIR /bin
 COPY bin/nginx-vts-exporter.tar.gz /bin/
-RUN tar xf /bin/nginx-vts-exporter.tar.gz -C /bin/ && chmod +x /bin/nginx-vts-exporter
+RUN tar xf /bin/nginx-vts-exporter.tar.gz -C /bin/nginx-vts-exporter 
+RUN chmod +x /bin/nginx-vts-exporter
 
 ENV NGINX_HOST "http://localhost"
 ENV METRICS_ENDPOINT "/metrics"
