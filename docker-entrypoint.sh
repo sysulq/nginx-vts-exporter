@@ -4,8 +4,6 @@ default_status="$NGIX_HOST/status/format/json"
 NGINX_STATUS=${NGINX_STATUS:-$default_status}
 METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
 
-tar xf /bin/nginx-vts-exporter.tar.gz -C /bin/
-
 # If there are any arguments then we want to run those instead
 #if [[ "$1" == "$binary" || -z $1 ]]; then
 #  exec "$@"
@@ -17,5 +15,5 @@ tar xf /bin/nginx-vts-exporter.tar.gz -C /bin/
 #echo "[$0] - Metrics Namespace  --> [$METRICS_NS]"
 #echo "[$0] - Running metrics nginx-vts-exporter"
 
-exec /bin/nginx-vts-exporter -nginx.scrape_uri=$NGINX_STATUS -telemetry.address $METRICS_ADDR -telemetry.endpoint $METRICS_ENDPOINT -metrics.namespace $METRICS_NS
+exec nginx-vts-exporter -nginx.scrape_uri=$NGINX_STATUS -telemetry.address $METRICS_ADDR -telemetry.endpoint $METRICS_ENDPOINT -metrics.namespace $METRICS_NS
 #fi
