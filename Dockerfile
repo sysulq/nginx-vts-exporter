@@ -3,6 +3,7 @@ MAINTAINER  Sophos <hnlq.sysu@gmail.com>
 
 WORKDIR /bin
 COPY bin/nginx-vts-exporter /bin/
+COPY docker-entrypoint.sh /bin/
 RUN chmod +x /bin/nginx-vts-exporter
 
 ENV NGINX_HOST "http://localhost"
