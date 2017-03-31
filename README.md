@@ -9,6 +9,7 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
 * [Dependency](#dependency)
 * [Download](#download)
 * [Compile](#compile)
+* [Config](#config)
 * [Run](#run) 
 * [Dockerized](#dockerized)
   * [Environment variables](#environment-variables)
@@ -37,6 +38,14 @@ export the binary inside ./bin/ directory
 ``` shell
 ./build-binary.sh
 ```
+
+## Config
+The application can have a configuration file.
+By default, it is located in ```/etc/nginx-vts-exporter/config.json```
+This can be overridden via the command line option ```-config.file /some/path/config.json```
+Parameters specified in the configuration file are less priority than command line parameters or environment variables.
+If the command-line parameter ```-nginx.scrape_uri http://somedomain.com/status/format/json``` is specified, it will be added to those listed in the configuration file.
+If there is no parameter nginxScrapeURIs.hostName in the configuration file, it will be taken from the data nginx-vts-module
 
 ## Run
 
