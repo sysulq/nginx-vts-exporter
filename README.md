@@ -15,8 +15,8 @@ Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometh
   * [Docker Build](#docker-build)
   * [Docker Run](#docker-run)
 * [Metrics](#metrics)
-  * [Server main](#server main)
-  * [Server zones](#server zones)
+  * [Server main](#server-main)
+  * [Server zones](#server-zones)
   * [Upstreams](#upstreams)
 
 ## Dependency
