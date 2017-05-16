@@ -1,0 +1,11 @@
+{
+    "telemetryAddress": ":9913",
+    "telemetryEndpoint": "/metrics",
+    "metricsNamespace": "nginx",
+    "nginxScrapeURIs": [
+        {
+            "hostName": "localhost",
+            "uri": "http://localhost/status/format/json"
+        }
+    ]
+}

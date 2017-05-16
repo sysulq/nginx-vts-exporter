@@ -1,8 +1,11 @@
 FROM        alpine:latest
 MAINTAINER  Sophos <hnlq.sysu@gmail.com>
 
+VOLUME /etc/nginx-vts-exporter/
+
 WORKDIR /bin
 COPY bin/nginx-vts-exporter /bin/
+COPY bin/config.json /etc/nginx-vts-exporter/
 COPY docker-entrypoint.sh /bin/
 RUN chmod +x /bin/nginx-vts-exporter
 

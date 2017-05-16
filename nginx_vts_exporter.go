@@ -17,6 +17,7 @@ import (
 )
 
 type NginxVts struct {
+	HostName     string `json:"hostName"`
 	NginxVersion string `json:"nginxVersion"`
 	LoadMsec     int64  `json:"loadMsec"`
 	NowMsec      int64  `json:"nowMsec"`
@@ -87,6 +88,7 @@ type Upstream struct {
 		FiveXx  int `json:"5xx"`
 	} `json:"responses"`
 	ResponseMsec int  `json:"responseMsec"`
+	RequestMsec  int  `json:"requestMsec"`
 	Weight       int  `json:"weight"`
 	MaxFails     int  `json:"maxFails"`
 	FailTimeout  int  `json:"failTimeout"`
@@ -136,50 +138,74 @@ type Cache struct {
 }
 
 type Exporter struct {
-	URI string
+	URIs            []URI
+	serverMetrics   map[string]*prometheus.Desc
+	upstreamMetrics map[string]*prometheus.Desc
+	cacheMetrics    map[string]*prometheus.Desc
+}
 
-	serverMetrics, upstreamMetrics, cacheMetrics map[string]*prometheus.Desc
+type configType struct {
+	TelemetryAddress  string `json:"telemetryAddress"`
+	TelemetryEndpoint string `json:"telemetryEndpoint"`
+	MetricsNamespace  string `json:"metricsNamespace"`
+	NginxScrapeURIs   []URI  `json:"nginxScrapeURIs"`
+}
+
+type URI struct {
+	HostName string `json:"hostName"`
+	Uri      string `json:"uri"`
+}
+
+type cmd struct {
+	showVersion      *bool
+	listenAddress    *string
+	metricsEndpoint  *string
+	metricsNamespace *string
+	nginxScrapeURI   *string
+	configFile       *string
+	insecure         *bool
 }
 
 func newServerMetric(metricName string, docString string, labels []string) *prometheus.Desc {
 	return prometheus.NewDesc(
-		prometheus.BuildFQName(*metricsNamespace, "server", metricName),
+		prometheus.BuildFQName(config.MetricsNamespace, "server", metricName),
 		docString, labels, nil,
 	)
 }
 
 func newUpstreamMetric(metricName string, docString string, labels []string) *prometheus.Desc {
 	return prometheus.NewDesc(
-		prometheus.BuildFQName(*metricsNamespace, "upstream", metricName),
+		prometheus.BuildFQName(config.MetricsNamespace, "upstream", metricName),
 		docString, labels, nil,
 	)
 }
 
 func newCacheMetric(metricName string, docString string, labels []string) *prometheus.Desc {
 	return prometheus.NewDesc(
-		prometheus.BuildFQName(*metricsNamespace, "cache", metricName),
+		prometheus.BuildFQName(config.MetricsNamespace, "cache", metricName),
 		docString, labels, nil,
 	)
 }
 
-func NewExporter(uri string) *Exporter {
+func NewExporter(uris []URI) *Exporter {
 
 	return &Exporter{
-		URI: uri,
+		URIs: uris,
 		serverMetrics: map[string]*prometheus.Desc{
-			"connections": newServerMetric("connections", "nginx connections", []string{"status"}),
-			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code"}),
-			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction"}),
-			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status"}),
+			"connections": newServerMetric("connections", "nginx connections", []string{"status", "hostName"}),
+			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code", "hostName"}),
+			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction", "hostName"}),
+			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status", "hostName"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
-			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}),
-			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
-			"response": newUpstreamMetric("response", "request response time", []string{"upstream", "backend"}),
+			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "hostName"}),
+			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction", "hostName"}),
+			"response": newUpstreamMetric("response", "The average of only upstream response processing times in milliseconds", []string{"upstream", "backend", "hostName"}),
+			"request":  newUpstreamMetric("request", "The average of request processing times including upstream in milliseconds.", []string{"upstream", "backend", "hostName"}),
 		},
 		cacheMetrics: map[string]*prometheus.Desc{
-			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status"}),
-			"bytes":    newCacheMetric("bytes", "cache request/response bytes", []string{"zone", "direction"}),
+			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status", "hostName"}),
+			"bytes":    newCacheMetric("bytes", "cache request/response bytes", []string{"zone", "direction", "hostName"}),
 		},
 	}
 }
@@ -198,55 +224,71 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
-	body, err := fetchHTTP(e.URI, 2*time.Second)()
-	if err != nil {
-		log.Println("fetchHTTP failed", err)
-		return
-	}
-	defer body.Close()
+	for _, uri := range e.URIs {
 
-	data, err := ioutil.ReadAll(body)
-	if err != nil {
-		log.Println("ioutil.ReadAll failed", err)
-		return
-	}
+		body, err := fetchHTTP(uri.Uri, 2*time.Second)()
+		if err != nil {
+			log.Println("fetchHTTP failed", err)
+			continue
+		}
 
-	var nginxVtx NginxVts
-	err = json.Unmarshal(data, &nginxVtx)
-	if err != nil {
-		log.Println("json.Unmarshal failed", err)
-		return
+		data, err := ioutil.ReadAll(body)
+		if err != nil {
+			log.Println("ioutil.ReadAll failed", err)
+			continue
+		}
+
+		var nginxVtx NginxVts
+		err = json.Unmarshal(data, &nginxVtx)
+		if err != nil {
+			log.Printf("json.Unmarshal failed. URI=%s, ERROR=%s ", uri.Uri, err)
+			continue
+		}
+
+		hostName := uri.HostName
+		if len(hostName) == 0 {
+			hostName = nginxVtx.HostName
+		}
+
+		Collect(nginxVtx, hostName, ch, e)
+
+		//log.Printf("successfull scrape form hostName=%s", hostName)
+
+		body.Close()
 	}
+}
+
+func Collect(nginxVtx NginxVts, hostName string, ch chan<- prometheus.Metric, e *Exporter) {
 
 	// connections
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Active), "active")
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Reading), "reading")
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Waiting), "waiting")
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Writing), "writing")
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Accepted), "accepted")
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Handled), "handled")
-	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Requests), "requests")
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Active), "active", hostName)
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Reading), "reading", hostName)
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Waiting), "waiting", hostName)
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Writing), "writing", hostName)
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Accepted), "accepted", hostName)
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Handled), "handled", hostName)
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Requests), "requests", hostName)
 
 	// ServerZones
 	for host, s := range nginxVtx.ServerZones {
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.RequestCounter), host, "total")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.OneXx), host, "1xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.TwoXx), host, "2xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.ThreeXx), host, "3xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FourXx), host, "4xx")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FiveXx), host, "5xx")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.RequestCounter), host, "total", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.OneXx), host, "1xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.TwoXx), host, "2xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.ThreeXx), host, "3xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FourXx), host, "4xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FiveXx), host, "5xx", hostName)
 
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Bypass), host, "bypass")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Expired), host, "expired")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Hit), host, "hit")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Miss), host, "miss")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Revalidated), host, "revalidated")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Scarce), host, "scarce")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Stale), host, "stale")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Updating), host, "updating")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Bypass), host, "bypass", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Expired), host, "expired", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Hit), host, "hit", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Miss), host, "miss", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Revalidated), host, "revalidated", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Scarce), host, "scarce", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Stale), host, "stale", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["cache"], prometheus.CounterValue, float64(s.Responses.Updating), host, "updating", hostName)
 
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), host, "in")
-		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), host, "out")
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), host, "in", hostName)
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), host, "out", hostName)
 	}
 
 	// UpstreamZones
@@ -263,33 +305,34 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 			inbytes += float64(s.InBytes)
 			outbytes += float64(s.OutBytes)
 
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["response"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["response"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server, hostName)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["request"], prometheus.GaugeValue, float64(s.RequestMsec), name, s.Server, hostName)
 		}
 
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, total, name, "total")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, one, name, "1xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, two, name, "2xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, three, name, "3xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, four, name, "4xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, five, name, "5xx")
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, total, name, "total", hostName)
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, one, name, "1xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, two, name, "2xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, three, name, "3xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, four, name, "4xx", hostName)
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, five, name, "5xx", hostName)
 
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, inbytes, name, "in")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, outbytes, name, "out")
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, inbytes, name, "in", hostName)
+		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, outbytes, name, "out", hostName)
 	}
 
 	// CacheZones
 	for zone, s := range nginxVtx.CacheZones {
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Bypass), zone, "bypass")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Expired), zone, "expired")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Hit), zone, "hit")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Miss), zone, "miss")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Revalidated), zone, "revalidated")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Scarce), zone, "scarce")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Stale), zone, "stale")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Updating), zone, "updating")
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Bypass), zone, "bypass", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Expired), zone, "expired", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Hit), zone, "hit", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Miss), zone, "miss", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Revalidated), zone, "revalidated", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Scarce), zone, "scarce", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Stale), zone, "stale", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["requests"], prometheus.CounterValue, float64(s.Responses.Updating), zone, "updating", hostName)
 
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), zone, "in")
-		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), zone, "out")
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), zone, "in", hostName)
+		ch <- prometheus.MustNewConstMetric(e.cacheMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), zone, "out", hostName)
 	}
 }
 
@@ -309,13 +352,55 @@ func fetchHTTP(uri string, timeout time.Duration) func() (io.ReadCloser, error) 
 	}
 }
 
+func readConfig(config *configType, configFile *string) *string {
+
+	log.Println("Read config file %s", *configFile)
+
+	file, e := ioutil.ReadFile(*configFile)
+	if e != nil {
+		fmt.Printf("File error: %v\n", e)
+	}
+
+	err := json.Unmarshal(file, &config)
+	if err != nil {
+		log.Printf("Error parse config file %s. %s", configFile, err)
+	}
+	log.Printf("Read from config file. Results: %+v\n", config)
+
+	if *cmd_args.listenAddress != listenAddress_def || config.TelemetryAddress == "" {
+		config.TelemetryAddress = *cmd_args.listenAddress
+	}
+	if *cmd_args.metricsEndpoint != metricsEndpoint_def || config.TelemetryEndpoint == "" {
+		config.TelemetryEndpoint = *cmd_args.metricsEndpoint
+	}
+	if *cmd_args.metricsNamespace != metricsNamespace_def || config.MetricsNamespace == "" {
+		config.MetricsNamespace = *cmd_args.metricsNamespace
+	}
+	add_cmd_scripe := true
+	for _, val := range config.NginxScrapeURIs {
+		if val.Uri == *cmd_args.nginxScrapeURI {
+			add_cmd_scripe = false
+			break
+		}
+	}
+	if *cmd_args.nginxScrapeURI == nginxScrapeURI_def && len(config.NginxScrapeURIs) != 0 {
+		add_cmd_scripe = false
+	}
+	if add_cmd_scripe {
+		config.NginxScrapeURIs = append(config.NginxScrapeURIs, URI{HostName: "", Uri: *cmd_args.nginxScrapeURI})
+	}
+	return nil
+}
+
 var (
-	showVersion      = flag.Bool("version", false, "Print version information.")
-	listenAddress    = flag.String("telemetry.address", ":9913", "Address on which to expose metrics.")
-	metricsEndpoint  = flag.String("telemetry.endpoint", "/metrics", "Path under which to expose metrics.")
-	metricsNamespace = flag.String("metrics.namespace", "nginx", "Prometheus metrics namespace.")
-	nginxScrapeURI   = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
-	insecure         = flag.Bool("insecure", true, "Ignore server certificate if using https")
+	cmd_args cmd
+	config   configType
+
+	listenAddress_def    = ":9913"
+	metricsEndpoint_def  = "/metrics"
+	metricsNamespace_def = "nginx"
+	nginxScrapeURI_def   = "http://localhost/status/format/json"
+	configFile_def       = "/etc/nginx-vts-exporter/config.json"
 )
 
 func init() {
@@ -323,9 +408,18 @@ func init() {
 }
 
 func main() {
+
+	cmd_args.showVersion = flag.Bool("version", false, "Print version information.")
+	cmd_args.listenAddress = flag.String("telemetry.address", listenAddress_def, "Address on which to expose metrics.")
+	cmd_args.metricsEndpoint = flag.String("telemetry.endpoint", metricsEndpoint_def, "Path under which to expose metrics.")
+	cmd_args.metricsNamespace = flag.String("metrics.namespace", metricsNamespace_def, "Prometheus metrics namespace.")
+	cmd_args.nginxScrapeURI = flag.String("nginx.scrape_uri", nginxScrapeURI_def, "URI to nginx VTS module json page")
+	cmd_args.configFile = flag.String("config.file", configFile_def, "path to config.json file")
+	cmd_args.insecure = flag.Bool("insecure", true, "Ignore server certificate if using https")
+
 	flag.Parse()
 
-	if *showVersion {
+	if *cmd_args.showVersion {
 		fmt.Fprintln(os.Stdout, version.Print("nginx_vts_exporter"))
 		os.Exit(0)
 	}
@@ -333,25 +427,29 @@ func main() {
 	log.Printf("Starting nginx_vts_exporter %s", version.Info())
 	log.Printf("Build context %s", version.BuildContext())
 
-	exporter := NewExporter(*nginxScrapeURI)
+	readConfig(&config, cmd_args.configFile)
+
+	log.Printf("Starting with config: %+v", config)
+
+	exporter := NewExporter(config.NginxScrapeURIs)
 	prometheus.MustRegister(exporter)
 	prometheus.Unregister(prometheus.NewProcessCollector(os.Getpid(), ""))
 	prometheus.Unregister(prometheus.NewGoCollector())
 
-	http.Handle(*metricsEndpoint, promhttp.Handler())
+	http.Handle(config.TelemetryEndpoint, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`<html>
 			<head><title>Nginx Exporter</title></head>
 			<body>
 			<h1>Nginx Exporter</h1>
-			<p><a href="` + *metricsEndpoint + `">Metrics</a></p>
+			<p><a href="` + config.TelemetryEndpoint + `">Metrics</a></p>
 			</body>
 			</html>`))
 	})
 
-	log.Printf("Starting Server at : %s", *listenAddress)
-	log.Printf("Metrics endpoint: %s", *metricsEndpoint)
-	log.Printf("Metrics namespace: %s", *metricsNamespace)
-	log.Printf("Scraping information from : %s", *nginxScrapeURI)
-	log.Fatal(http.ListenAndServe(*listenAddress, nil))
+	log.Printf("Starting Server at : %s", config.TelemetryAddress)
+	log.Printf("Metrics endpoint: %s", config.TelemetryEndpoint)
+	log.Printf("Metrics namespace: %s", config.MetricsNamespace)
+	log.Printf("Scraping information from : %+v", config.NginxScrapeURIs)
+	log.Fatal(http.ListenAndServe(config.TelemetryAddress, nil))
 }
