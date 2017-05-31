@@ -81,7 +81,7 @@ docker run  -ti --rm --env NGIX_HOST="http://localhost/status/format/json" --env
 
 ## Metrics
 
-Documents about exposed Prometheus metrics
+Documents about exposed Prometheus metrics. For details on the underlying metrics please see [nginx-module-vts](https://github.com/vozlt/nginx-module-vts#json-used-by-status)
 
 ### Server main
 
