@@ -4,7 +4,7 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/sophos/nginx-vts-exporter.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hnlq715/nginx-vts-exporter)](https://goreportcard.com/report/github.com/hnlq715/nginx-vts-exporter)
 
-Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometheus consumption
+Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts) stats and exports them via HTTP for Prometheus consumption
 
 ## Table of Contents
 * [Dependency](#dependency)
