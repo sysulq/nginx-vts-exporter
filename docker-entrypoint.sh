@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eo pipefail
-default_status="$NGIX_HOST/status/format/json"
+default_status="$NGINX_HOST/status/format/json"
 NGINX_STATUS=${NGINX_STATUS:-$default_status}
 METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
 
