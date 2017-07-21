@@ -4,6 +4,7 @@ default_status="$NGIX_HOST/status/format/json"
 NGINX_STATUS=${NGINX_STATUS:-$default_status}
 METRICS_NS=${METRICS_NS:-$DEFAULT_METRICS_NS}
 
+
 # If there are any arguments then we want to run those instead
 #if [[ "$1" == "$binary" || -z $1 ]]; then
 #  exec "$@"
