@@ -9,8 +9,8 @@ go:
 - 1.8.3
 
 script:
-- make
+- make crossbuild
 - make docker
 - make push
-- make crossbuild
+- make tarball
 - make pushgithub

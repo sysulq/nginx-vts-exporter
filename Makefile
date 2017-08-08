@@ -32,7 +32,7 @@ build: promu
 
 crossbuild: promu
 	@echo ">> crossbuilding binaries"
-	@$(PROMU) crossbuild --prefix $(PREFIX)
+	@$(PROMU) crossbuild
 
 tarball: promu
 	@echo ">> building release tarball"
