@@ -51,7 +51,7 @@ push:
 release: promu github-release
 	@echo ">> pushing binary to github with ghr"
 	@$(PROMU) crossbuild tarballs
-	@$(PROMU) relase .tarballs
+	@$(PROMU) release .tarballs
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \

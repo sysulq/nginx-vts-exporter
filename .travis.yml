@@ -8,9 +8,20 @@ language: go
 go:
 - 1.8.3
 
-script:
-- make
-- make docker
-- make push
-- make crossbuild
-- make release
+deploy:
+  provider: script
+  script:
+    - make
+    - make docker
+    - make push
+  on:
+    tags: true
+    all_branches: true
+
+deploy:
+  provider: script
+  script:
+    - make crossbuild
+    - make release
+  on:
+    tags: true
