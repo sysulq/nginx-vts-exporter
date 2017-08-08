@@ -38,7 +38,7 @@ docker:
 	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
 
 push:
-	@export TAG=`if [ "$(TRAVIS_BRANCH)" == "master" ]; then echo "latest"; else echo $(TRAVIS_BRANCH) ; fi`
+	@export TAG=`if [ "$(TRAVIS_BRANCH)" = "master" ]; then echo "latest"; else echo $(TRAVIS_BRANCH) ; fi`
 	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(TAG)"
 	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	@docker tag "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
