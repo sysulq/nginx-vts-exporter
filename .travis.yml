@@ -12,3 +12,5 @@ script:
 - make
 - make docker
 - make push
+- make crossbuild
+- make pushgithub

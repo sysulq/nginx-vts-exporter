@@ -30,6 +30,10 @@ build: promu
 	@echo ">> building binaries"
 	@$(PROMU) build --prefix $(PREFIX)
 
+crossbuild: promu
+	@echo ">> crossbuilding binaries"
+	@$(PROMU) crossbuild --prefix $(PREFIX)
+
 tarball: promu
 	@echo ">> building release tarball"
 	@$(PROMU) tarball --prefix $(PREFIX) $(BIN_DIR)
@@ -43,6 +47,10 @@ push:
 	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	@docker tag "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
 	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
+
+pushgithub:
+	@echo ">> pushing binary to github"
+	@ghr $(TAG) *.tar.gz
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
