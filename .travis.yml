@@ -8,3 +8,5 @@ go:
 
 script:
 - make
+- make docker
+- make push
