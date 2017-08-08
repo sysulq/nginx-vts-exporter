@@ -40,8 +40,8 @@ docker:
 
 push:
 	@echo ">> pushing docker image"
-	@docker login -u $DOCKER_USER -p $DOCKER_PASS
-	@docker push "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)"
+	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)"
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
