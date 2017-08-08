@@ -11,11 +11,12 @@ Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts
 * [Dependency](#dependency)
 * [Download](#download)
 * [Compile](#compile)
-* [Run](#run) 
-* [Dockerized](#dockerized)
-  * [Environment variables](#environment-variables)
-  * [Docker Build](#docker-build)
-  * [Docker Run](#docker-run)
+  * [build binary](#build-binary)
+  * [build docker image](#build-docker-image)
+* [Run](#run)
+  * [run binary](#run-binary)
+  * [run docker image](#run-docker-image)
+* [Environment variables](#environment-variables)
 * [Metrics](#metrics)
   * [Server main](#server-main)
   * [Server zones](#server-zones)
@@ -63,7 +64,7 @@ nohup /bin/nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/j
 docker run  -ti --rm --env NGINX_HOST="http://localhost/status/format/json" sophos/nginx-vts-exporter
 ```
 
-### Environment variables
+## Environment variables
 
 This image is configurable using different env variables
 
