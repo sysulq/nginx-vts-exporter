@@ -50,7 +50,7 @@ push:
 
 pushgithub: ghr
 	@echo ">> pushing binary to github with ghr"
-	@ghr $(TAG) *.tar.gz
+	@ghr -t $(GITHUB_TOKEN) $(TAG) *.tar.gz
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
