@@ -12,11 +12,4 @@ after_success:
   - make
   - make docker
   - make push
-
-deploy:
-  provider: script
-  script:
-    - make crossbuild
-    - make release
-  on:
-    tags: true
+  - if [[ -n "$TRAVIS_TAG" ]]; then make crossbuild release; fi
