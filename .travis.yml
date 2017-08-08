@@ -8,21 +8,14 @@ language: go
 go:
 - 1.8.3
 
-deploy:
-  provider: script
-  script:
-    - make
-    - make docker
-    - make push
-  on:
-    all_branches: true
+after_success:
+  - make
+  - make docker
+  - make push
 
 deploy:
   provider: script
   script:
-    - make
-    - make docker
-    - make push
     - make crossbuild
     - make release
   on:
