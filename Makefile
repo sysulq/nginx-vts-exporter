@@ -7,7 +7,6 @@ BIN_DIR                 ?= $(shell pwd)
 DOCKER_IMAGE_NAME       ?= nginx-vts-exporter
 DOCKER_IMAGE_TAG        ?= $(subst /,-,$(shell git rev-parse --abbrev-ref HEAD))
 
-
 all: format build test
 
 style:
@@ -39,9 +38,10 @@ docker:
 	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
 
 push:
-	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(DOCKER_IMAGE_TAG)"
+	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(TRAVIS_TAG)"
 	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
-	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)"
+	@docker build -t "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TRAVIS_TAG)" .
+	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TRAVIS_TAG)"
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
