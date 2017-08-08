@@ -39,7 +39,7 @@ docker:
 	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
 
 push:
-	@echo ">> pushing docker image"
+	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(DOCKER_IMAGE_TAG)"
 	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)"
 
