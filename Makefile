@@ -48,18 +48,19 @@ push:
 	@docker tag "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
 	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
 
-pushgithub: ghr
+release: promu github-release
 	@echo ">> pushing binary to github with ghr"
-	@ghr -t $(GITHUB_TOKEN) $(TAG) *.tar.gz
+	@$(PROMU) crossbuild tarballs
+	@$(PROMU) relase .tarballs
 
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
 		GOARCH=$(subst x86_64,amd64,$(patsubst i%86,386,$(shell uname -m))) \
 		$(GO) get -u github.com/prometheus/promu
 
-ghr:
+github-release:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
 		GOARCH=$(subst x86_64,amd64,$(patsubst i%86,386,$(shell uname -m))) \
-		$(GO) get -u github.com/tcnksm/ghr
+		$(GO) get -u github.com/aktau/github-release
 
 .PHONY: all style format build test vet tarball docker promu
