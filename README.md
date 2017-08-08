@@ -33,22 +33,35 @@ Binary can be downloaded from [Releases](https://github.com/hnlq715/nginx-vts-ex
 
 ## Compile
 
-This shell script above will build a temp Docker image with the binary and then
-export the binary inside ./bin/ directory
+### build binary
 
 ``` shell
-./build-binary.sh
+make
 ```
+
+### build docker image
+``` shell
+make docker
+```
+
+## Docker Hub Image
+``` shell
+docker pull sophos/nginx-vts-exporter:latest
+```
+It can be used directly instead of having to build the image yourself.
+([Docker Hub sophos/nginx-vts-exporter](https://hub.docker.com/r/sophos/nginx-vts-exporter/))
 
 ## Run
 
+### run binary
 ``` shell
 nohup /bin/nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
 ```
 
-## Dockerized
-
-To Dockerize this application yo need to pass two steps the build then the containerization.
+### run docker
+```
+docker run  -ti --rm --env NGINX_HOST="http://localhost/status/format/json" sophos/nginx-vts-exporter
+```
 
 ### Environment variables
 
@@ -60,26 +73,6 @@ NGINX_STATUS |  http://localhost/status/format/json | Nginx JSON format status p
 METRICS_ENDPOINT | /metrics  | Metrics endpoint exportation URI
 METRICS_ADDR | :9913 | Metrics exportation address:port
 METRICS_NS | nginx | Prometheus metrics Namespaces
-
-## Docker Hub Image
-``` shell
-docker pull sophos/nginx-vts-exporter:latest
-```
-It can be used directly instead of having to build the image yourself.
-([Docker Hub sophos/nginx-vts-exporter](https://hub.docker.com/r/sophos/nginx-vts-exporter/))
-
-### Docker Build
-
-``` shell
-./build-binary.sh
-docker build -t vts-export .
-```
-
-### Docker Run
-
-``` shell
-docker run  -ti --rm --env NGIX_HOST="http://localhost/status/format/json" --env METRICS_NS="nginx_prod1" vts-export
-```
 
 ## Metrics
 
