@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/hnlq715/nginx-vts-exporter.svg?branch=master)](https://travis-ci.org/hnlq715/nginx-vts-exporter)
 ![Docker Repository on Quay](https://quay.io/repository/hnlq715/nginx-vts-exporter/status)
-![Docker Pulls](https://img.shields.io/docker/pulls/sophos/nginx-vts-exporter.svg)
+[![Docker Pulls](https://img.shields.io/docker/pulls/sophos/nginx-vts-exporter.svg)](https://hub.docker.com/r/sophos/nginx-vts-exporter/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hnlq715/nginx-vts-exporter)](https://goreportcard.com/report/github.com/hnlq715/nginx-vts-exporter)
 
 Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts) stats and exports them via HTTP for Prometheus consumption
