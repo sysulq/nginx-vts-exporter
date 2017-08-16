@@ -1,5 +1,35 @@
 {
-  "id": 17,
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "4.0.2"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
+  "id": null,
   "title": "Nginx VTS Stats",
   "description": "Show stats from the hnlq715/nginx-vts-exporter.",
   "tags": [
@@ -12,7 +42,7 @@
   "sharedCrosshair": false,
   "hideControls": false,
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -44,11 +74,8 @@
     "list": [
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "hide": 0,
         "includeAll": true,
         "label": null,
@@ -67,12 +94,8 @@
       },
       {
         "allValue": ".*",
-        "current": {
-          "text": "All",
-          "value": "$__all",
-          "tags": []
-        },
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "hide": 0,
         "includeAll": true,
         "label": null,
@@ -95,7 +118,7 @@
     "list": []
   },
   "schemaVersion": 13,
-  "version": 6,
+  "version": 1,
   "links": [],
   "gnetId": 1623,
   "rows": [
@@ -105,7 +128,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "id": 1,
           "legend": {
@@ -136,7 +159,7 @@
               "legendFormat": "{{ status }}",
               "metric": "nginx_server_connections",
               "refId": "A",
-              "step": 60
+              "step": 240
             }
           ],
           "thresholds": [],
@@ -178,166 +201,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "prometheus",
-          "fill": 1,
-          "id": 2,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 6,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(irate(nginx_server_bytes{host=~\"^$Host$\"}[5m])) by (direction)",
-              "intervalFactor": 2,
-              "legendFormat": "{{ direction }}",
-              "metric": "nginx_server_bytes",
-              "refId": "A",
-              "step": 60
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Server Bytes",
-          "tooltip": {
-            "msResolution": false,
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "bytes",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "showTitle": false,
-      "titleSize": "h6",
-      "height": "250px",
-      "repeat": null,
-      "repeatRowId": null,
-      "repeatIteration": null,
-      "collapse": false
-    },
-    {
-      "title": "Dashboard Row",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "datasource": "prometheus",
-          "fill": 1,
-          "id": 3,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "span": 6,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(irate(nginx_server_requests{code!=\"total\"}[5m])) by (code)",
-              "interval": "",
-              "intervalFactor": 2,
-              "legendFormat": "{{ code }}",
-              "metric": "nginx_server_requests",
-              "refId": "A",
-              "step": 60
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Server Requests",
-          "tooltip": {
-            "msResolution": false,
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "id": 4,
           "legend": {
@@ -369,7 +233,7 @@
               "legendFormat": "{{ status }}",
               "metric": "nginx_server_cache",
               "refId": "A",
-              "step": 60
+              "step": 240
             }
           ],
           "thresholds": [],
@@ -411,7 +275,7 @@
       ],
       "showTitle": false,
       "titleSize": "h6",
-      "height": 250,
+      "height": "250px",
       "repeat": null,
       "repeatRowId": null,
       "repeatIteration": null,
@@ -423,9 +287,9 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
-          "id": 5,
+          "id": 3,
           "legend": {
             "avg": false,
             "current": false,
@@ -449,19 +313,19 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(irate(nginx_upstream_bytes{upstream=~\"^$Upstream$\"}[5m])) by (direction)",
+              "expr": "sum(irate(nginx_server_requests{code!=\"total\"}[5m])) by (code)",
               "interval": "",
               "intervalFactor": 2,
-              "legendFormat": "{{ direction }}",
-              "metric": "nginx_upstream_bytes",
+              "legendFormat": "{{ code }}",
+              "metric": "nginx_server_requests",
               "refId": "A",
-              "step": 60
+              "step": 240
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Upstream Bytes",
+          "title": "Server Requests",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -497,7 +361,92 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
+          "fill": 1,
+          "id": 2,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(nginx_server_bytes{host=~\"^$Host$\"}[5m])) by (direction)",
+              "intervalFactor": 2,
+              "legendFormat": "{{ direction }}",
+              "metric": "nginx_server_bytes",
+              "refId": "A",
+              "step": 240
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Server Bytes",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "bytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "showTitle": false,
+      "titleSize": "h6",
+      "height": 250,
+      "repeat": null,
+      "repeatRowId": null,
+      "repeatIteration": null,
+      "collapse": false
+    },
+    {
+      "title": "Dashboard Row",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "id": 6,
           "legend": {
@@ -529,13 +478,87 @@
               "legendFormat": "{{ code }}",
               "metric": "nginx_upstream_requests",
               "refId": "A",
-              "step": 60
+              "step": 240
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Upstream Requests",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": "${DS_PROMETHEUS}",
+          "fill": 1,
+          "id": 5,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(nginx_upstream_bytes{upstream=~\"^$Upstream$\"}[5m])) by (direction)",
+              "interval": "",
+              "intervalFactor": 2,
+              "legendFormat": "{{ direction }}",
+              "metric": "nginx_upstream_bytes",
+              "refId": "A",
+              "step": 240
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Upstream Bytes",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -583,7 +606,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "fill": 1,
           "id": 7,
           "legend": {
@@ -615,7 +638,7 @@
               "legendFormat": "{{ backend }}",
               "metric": "nginx_upstream_response",
               "refId": "A",
-              "step": 30
+              "step": 120
             }
           ],
           "thresholds": [],
