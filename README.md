@@ -77,7 +77,11 @@ METRICS_NS | nginx | Prometheus metrics Namespaces
 
 ## Metrics
 
-Documents about exposed Prometheus metrics. For details on the underlying metrics please see [nginx-module-vts](https://github.com/vozlt/nginx-module-vts#json-used-by-status)
+Documents about exposed Prometheus metrics.
+
+For details on the underlying metrics please see [nginx-module-vts](https://github.com/vozlt/nginx-module-vts#json-used-by-status)
+
+For grafana dashboard please see [nginx-vts-exporter dashboard](https://grafana.com/dashboards/2949)
 
 ### Server main
 
