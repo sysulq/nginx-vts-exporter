@@ -61,7 +61,7 @@ nohup /bin/nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/j
 
 ### run docker
 ```
-docker run  -ti --rm --env NGINX_HOST="http://localhost/status/format/json" sophos/nginx-vts-exporter
+docker run  -ti --rm --env NGINX_STATUS="http://localhost/status/format/json" sophos/nginx-vts-exporter
 ```
 
 ## Environment variables
