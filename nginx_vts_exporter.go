@@ -39,6 +39,7 @@ type Server struct {
 	RequestCounter int `json:"requestCounter"`
 	InBytes        int `json:"inBytes"`
 	OutBytes       int `json:"outBytes"`
+	RequestMsec    int `json:"requestMsec"`
 	Responses      struct {
 		OneXx       int `json:"1xx"`
 		TwoXx       int `json:"2xx"`
@@ -195,6 +196,7 @@ func NewExporter(uris []URI) *Exporter {
 			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code", "hostName"}),
 			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction", "hostName"}),
 			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status", "hostName"}),
+			"requestMsec": newServerMetric("requestMsec", "The average of request processing times in milliseconds", []string{"host", "hostName"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
 			"requests": newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "hostName"}),
@@ -226,13 +228,13 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 		body, err := fetchHTTP(uri.Uri, 2*time.Second)()
 		if err != nil {
-			log.Println("fetchHTTP failed", err)
+			log.Printf("fetchHTTP failed for URI=%s, ERROR=%s", uri.Uri, err)
 			continue
 		}
 
 		data, err := ioutil.ReadAll(body)
 		if err != nil {
-			log.Println("ioutil.ReadAll failed", err)
+			log.Printf("ioutil.ReadAll failed for URI=%s, ERROR=%s", uri.Uri, err)
 			continue
 		}
 
@@ -287,6 +289,8 @@ func Collect(nginxVtx NginxVts, hostName string, ch chan<- prometheus.Metric, e 
 
 		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), host, "in", hostName)
 		ch <- prometheus.MustNewConstMetric(e.serverMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), host, "out", hostName)
+
+		ch <- prometheus.MustNewConstMetric(e.serverMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), host, hostName)
 	}
 
 	// UpstreamZones

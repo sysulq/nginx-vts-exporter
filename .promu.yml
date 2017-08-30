@@ -1,5 +1,5 @@
 repository:
-    path: github.com/hnlq715/nginx-vts-exporter
+    path: github.com/StereoRu/nginx-vts-exporter
 build:
     flags: -a -tags netgo
     ldflags: |
