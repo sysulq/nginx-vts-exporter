@@ -198,7 +198,7 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
-	body, err := fetchHTTP(e.URI, 2*time.Second)()
+	body, err := fetchHTTP(e.URI, time.Duration(*nginxScrapeTimeout)*time.Second)()
 	if err != nil {
 		log.Println("fetchHTTP failed", err)
 		return
@@ -310,12 +310,13 @@ func fetchHTTP(uri string, timeout time.Duration) func() (io.ReadCloser, error) 
 }
 
 var (
-	showVersion      = flag.Bool("version", false, "Print version information.")
-	listenAddress    = flag.String("telemetry.address", ":9913", "Address on which to expose metrics.")
-	metricsEndpoint  = flag.String("telemetry.endpoint", "/metrics", "Path under which to expose metrics.")
-	metricsNamespace = flag.String("metrics.namespace", "nginx", "Prometheus metrics namespace.")
-	nginxScrapeURI   = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
-	insecure         = flag.Bool("insecure", true, "Ignore server certificate if using https")
+	showVersion        = flag.Bool("version", false, "Print version information.")
+	listenAddress      = flag.String("telemetry.address", ":9913", "Address on which to expose metrics.")
+	metricsEndpoint    = flag.String("telemetry.endpoint", "/metrics", "Path under which to expose metrics.")
+	metricsNamespace   = flag.String("metrics.namespace", "nginx", "Prometheus metrics namespace.")
+	nginxScrapeURI     = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
+	insecure           = flag.Bool("insecure", true, "Ignore server certificate if using https")
+	nginxScrapeTimeout = flag.Int("nginx.scrape_timeout", 2, "The number of seconds to wait for an HTTP response from the nginx.scrape_uri")
 )
 
 func init() {
