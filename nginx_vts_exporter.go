@@ -29,9 +29,10 @@ type NginxVts struct {
 		Handled  int `json:"handled"`
 		Requests int `json:"requests"`
 	} `json:"connections"`
-	ServerZones   map[string]Server     `json:"serverZones"`
-	UpstreamZones map[string][]Upstream `json:"upstreamZones"`
-	CacheZones    map[string]Cache      `json:"cacheZones"`
+	ServerZones   map[string]Server              `json:"serverZones"`
+	UpstreamZones map[string][]Upstream          `json:"upstreamZones"`
+	FilterZones   map[string]map[string]Upstream `json:"filterZones"`
+	CacheZones    map[string]Cache               `json:"cacheZones"`
 }
 
 type Server struct {
@@ -138,7 +139,7 @@ type Cache struct {
 type Exporter struct {
 	URI string
 
-	serverMetrics, upstreamMetrics, cacheMetrics map[string]*prometheus.Desc
+	serverMetrics, upstreamMetrics, filterMetrics, cacheMetrics map[string]*prometheus.Desc
 }
 
 func newServerMetric(metricName string, docString string, labels []string) *prometheus.Desc {
@@ -151,6 +152,13 @@ func newServerMetric(metricName string, docString string, labels []string) *prom
 func newUpstreamMetric(metricName string, docString string, labels []string) *prometheus.Desc {
 	return prometheus.NewDesc(
 		prometheus.BuildFQName(*metricsNamespace, "upstream", metricName),
+		docString, labels, nil,
+	)
+}
+
+func newFilterMetric(metricName string, docString string, labels []string) *prometheus.Desc {
+	return prometheus.NewDesc(
+		prometheus.BuildFQName(*metricsNamespace, "filter", metricName),
 		docString, labels, nil,
 	)
 }
@@ -177,6 +185,11 @@ func NewExporter(uri string) *Exporter {
 			"bytes":    newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
 			"response": newUpstreamMetric("response", "request response time", []string{"upstream", "backend"}),
 		},
+		filterMetrics: map[string]*prometheus.Desc{
+			"requests": newFilterMetric("requests", "requests counter", []string{"filter", "filterName", "code"}),
+			"bytes":    newFilterMetric("bytes", "request/response bytes", []string{"filter", "filterName", "direction"}),
+			"response": newFilterMetric("response", "request response time", []string{"filter", "filterName"}),
+		},
 		cacheMetrics: map[string]*prometheus.Desc{
 			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status"}),
 			"bytes":    newCacheMetric("bytes", "cache request/response bytes", []string{"zone", "direction"}),
@@ -189,6 +202,9 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 		ch <- m
 	}
 	for _, m := range e.upstreamMetrics {
+		ch <- m
+	}
+	for _, m := range e.filterMetrics {
 		ch <- m
 	}
 	for _, m := range e.cacheMetrics {
@@ -265,16 +281,21 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["response"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
 		}
+	}
+	// FilterZones
+	for filter, values := range nginxVtx.FilterZones {
+		for name, stat := range values {
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["response"], prometheus.GaugeValue, float64(stat.ResponseMsec), filter, name)
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.RequestCounter), filter, name, "total")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.OneXx), filter, name, "1xx")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.TwoXx), filter, name, "2xx")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.ThreeXx), filter, name, "3xx")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.FourXx), filter, name, "4xx")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.FiveXx), filter, name, "5xx")
 
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, total, name, "total")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, one, name, "1xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, two, name, "2xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, three, name, "3xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, four, name, "4xx")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, five, name, "5xx")
-
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, inbytes, name, "in")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, outbytes, name, "out")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["bytes"], prometheus.CounterValue, float64(stat.InBytes), filter, name, "in")
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["bytes"], prometheus.CounterValue, float64(stat.OutBytes), filter, name, "out")
+		}
 	}
 
 	// CacheZones

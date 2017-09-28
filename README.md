@@ -20,6 +20,7 @@ Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts
 * [Metrics](#metrics)
   * [Server main](#server-main)
   * [Server zones](#server-zones)
+  * [Filter zones](#filter-zones)
   * [Upstreams](#upstreams)
 
 ## Dependency
@@ -120,6 +121,30 @@ nginx_server_bytes{direction="in",host="test.domain.com"} 21
 # Server Cache
 nginx_server_cache{host="test.domain.com",status="bypass"} 2
 ```
+
+### Filter zones
+
+**Metrics details**
+
+Nginx data         | Name                            | Exposed informations
+------------------ | ------------------------------- | ------------------------
+ **Requests**      | `{NAMESPACE}_filter_requests` | code [2xx, 3xx, 4xx, 5xx and total], filter, filter name
+ **Bytes**         | `{NAMESPACE}_filter_bytes`    | direction [in, out], filter, filter name
+ **Response time** | `{NAMESPACE}_filter_response` | filter, filter name
+
+**Metrics output example**
+
+``` txt
+# Filter Requests
+nginx_upstream_requests{code="1xx", filter="country", filterName="BY"} 0
+
+# Filter Bytes
+nginx_upstream_bytes{direction="in", filter="country", filterName="BY"} 0
+
+# Filter Response time
+nginx_upstream_response{filter="country", filterName="BY"} 99
+```
+
 
 ### Upstreams
 
