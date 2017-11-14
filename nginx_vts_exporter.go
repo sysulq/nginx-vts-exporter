@@ -21,13 +21,13 @@ type NginxVts struct {
 	LoadMsec     int64  `json:"loadMsec"`
 	NowMsec      int64  `json:"nowMsec"`
 	Connections  struct {
-		Active   int `json:"active"`
-		Reading  int `json:"reading"`
-		Writing  int `json:"writing"`
-		Waiting  int `json:"waiting"`
-		Accepted int `json:"accepted"`
-		Handled  int `json:"handled"`
-		Requests int `json:"requests"`
+		Active   uint64 `json:"active"`
+		Reading  uint64 `json:"reading"`
+		Writing  uint64 `json:"writing"`
+		Waiting  uint64 `json:"waiting"`
+		Accepted uint64 `json:"accepted"`
+		Handled  uint64 `json:"handled"`
+		Requests uint64 `json:"requests"`
 	} `json:"connections"`
 	ServerZones   map[string]Server              `json:"serverZones"`
 	UpstreamZones map[string][]Upstream          `json:"upstreamZones"`
@@ -36,103 +36,103 @@ type NginxVts struct {
 }
 
 type Server struct {
-	RequestCounter int `json:"requestCounter"`
-	InBytes        int `json:"inBytes"`
-	OutBytes       int `json:"outBytes"`
+	RequestCounter uint64 `json:"requestCounter"`
+	InBytes        uint64 `json:"inBytes"`
+	OutBytes       uint64 `json:"outBytes"`
 	Responses      struct {
-		OneXx       int `json:"1xx"`
-		TwoXx       int `json:"2xx"`
-		ThreeXx     int `json:"3xx"`
-		FourXx      int `json:"4xx"`
-		FiveXx      int `json:"5xx"`
-		Miss        int `json:"miss"`
-		Bypass      int `json:"bypass"`
-		Expired     int `json:"expired"`
-		Stale       int `json:"stale"`
-		Updating    int `json:"updating"`
-		Revalidated int `json:"revalidated"`
-		Hit         int `json:"hit"`
-		Scarce      int `json:"scarce"`
+		OneXx       uint64 `json:"1xx"`
+		TwoXx       uint64 `json:"2xx"`
+		ThreeXx     uint64 `json:"3xx"`
+		FourXx      uint64 `json:"4xx"`
+		FiveXx      uint64 `json:"5xx"`
+		Miss        uint64 `json:"miss"`
+		Bypass      uint64 `json:"bypass"`
+		Expired     uint64 `json:"expired"`
+		Stale       uint64 `json:"stale"`
+		Updating    uint64 `json:"updating"`
+		Revalidated uint64 `json:"revalidated"`
+		Hit         uint64 `json:"hit"`
+		Scarce      uint64 `json:"scarce"`
 	} `json:"responses"`
 	OverCounts struct {
 		MaxIntegerSize float64 `json:"maxIntegerSize"`
-		RequestCounter int     `json:"requestCounter"`
-		InBytes        int     `json:"inBytes"`
-		OutBytes       int     `json:"outBytes"`
-		OneXx          int     `json:"1xx"`
-		TwoXx          int     `json:"2xx"`
-		ThreeXx        int     `json:"3xx"`
-		FourXx         int     `json:"4xx"`
-		FiveXx         int     `json:"5xx"`
-		Miss           int     `json:"miss"`
-		Bypass         int     `json:"bypass"`
-		Expired        int     `json:"expired"`
-		Stale          int     `json:"stale"`
-		Updating       int     `json:"updating"`
-		Revalidated    int     `json:"revalidated"`
-		Hit            int     `json:"hit"`
-		Scarce         int     `json:"scarce"`
+		RequestCounter uint64  `json:"requestCounter"`
+		InBytes        uint64  `json:"inBytes"`
+		OutBytes       uint64  `json:"outBytes"`
+		OneXx          uint64  `json:"1xx"`
+		TwoXx          uint64  `json:"2xx"`
+		ThreeXx        uint64  `json:"3xx"`
+		FourXx         uint64  `json:"4xx"`
+		FiveXx         uint64  `json:"5xx"`
+		Miss           uint64  `json:"miss"`
+		Bypass         uint64  `json:"bypass"`
+		Expired        uint64  `json:"expired"`
+		Stale          uint64  `json:"stale"`
+		Updating       uint64  `json:"updating"`
+		Revalidated    uint64  `json:"revalidated"`
+		Hit            uint64  `json:"hit"`
+		Scarce         uint64  `json:"scarce"`
 	} `json:"overCounts"`
 }
 
 type Upstream struct {
 	Server         string `json:"server"`
-	RequestCounter int    `json:"requestCounter"`
-	InBytes        int    `json:"inBytes"`
-	OutBytes       int    `json:"outBytes"`
+	RequestCounter uint64 `json:"requestCounter"`
+	InBytes        uint64 `json:"inBytes"`
+	OutBytes       uint64 `json:"outBytes"`
 	Responses      struct {
-		OneXx   int `json:"1xx"`
-		TwoXx   int `json:"2xx"`
-		ThreeXx int `json:"3xx"`
-		FourXx  int `json:"4xx"`
-		FiveXx  int `json:"5xx"`
+		OneXx   uint64 `json:"1xx"`
+		TwoXx   uint64 `json:"2xx"`
+		ThreeXx uint64 `json:"3xx"`
+		FourXx  uint64 `json:"4xx"`
+		FiveXx  uint64 `json:"5xx"`
 	} `json:"responses"`
-	ResponseMsec int  `json:"responseMsec"`
-	Weight       int  `json:"weight"`
-	MaxFails     int  `json:"maxFails"`
-	FailTimeout  int  `json:"failTimeout"`
-	Backup       bool `json:"backup"`
-	Down         bool `json:"down"`
+	ResponseMsec uint64 `json:"responseMsec"`
+	Weight       uint64 `json:"weight"`
+	MaxFails     uint64 `json:"maxFails"`
+	FailTimeout  uint64 `json:"failTimeout"`
+	Backup       bool   `json:"backup"`
+	Down         bool   `json:"down"`
 	OverCounts   struct {
 		MaxIntegerSize float64 `json:"maxIntegerSize"`
-		RequestCounter int     `json:"requestCounter"`
-		InBytes        int     `json:"inBytes"`
-		OutBytes       int     `json:"outBytes"`
-		OneXx          int     `json:"1xx"`
-		TwoXx          int     `json:"2xx"`
-		ThreeXx        int     `json:"3xx"`
-		FourXx         int     `json:"4xx"`
-		FiveXx         int     `json:"5xx"`
+		RequestCounter uint64  `json:"requestCounter"`
+		InBytes        uint64  `json:"inBytes"`
+		OutBytes       uint64  `json:"outBytes"`
+		OneXx          uint64  `json:"1xx"`
+		TwoXx          uint64  `json:"2xx"`
+		ThreeXx        uint64  `json:"3xx"`
+		FourXx         uint64  `json:"4xx"`
+		FiveXx         uint64  `json:"5xx"`
 	} `json:"overCounts"`
 }
 
 type Cache struct {
-	MaxSize   int `json:"maxSize"`
-	UsedSize  int `json:"usedSize"`
-	InBytes   int `json:"inBytes"`
-	OutBytes  int `json:"outBytes"`
+	MaxSize   uint64 `json:"maxSize"`
+	UsedSize  uint64 `json:"usedSize"`
+	InBytes   uint64 `json:"inBytes"`
+	OutBytes  uint64 `json:"outBytes"`
 	Responses struct {
-		Miss        int `json:"miss"`
-		Bypass      int `json:"bypass"`
-		Expired     int `json:"expired"`
-		Stale       int `json:"stale"`
-		Updating    int `json:"updating"`
-		Revalidated int `json:"revalidated"`
-		Hit         int `json:"hit"`
-		Scarce      int `json:"scarce"`
+		Miss        uint64 `json:"miss"`
+		Bypass      uint64 `json:"bypass"`
+		Expired     uint64 `json:"expired"`
+		Stale       uint64 `json:"stale"`
+		Updating    uint64 `json:"updating"`
+		Revalidated uint64 `json:"revalidated"`
+		Hit         uint64 `json:"hit"`
+		Scarce      uint64 `json:"scarce"`
 	} `json:"responses"`
 	OverCounts struct {
 		MaxIntegerSize float64 `json:"maxIntegerSize"`
-		InBytes        int     `json:"inBytes"`
-		OutBytes       int     `json:"outBytes"`
-		Miss           int     `json:"miss"`
-		Bypass         int     `json:"bypass"`
-		Expired        int     `json:"expired"`
-		Stale          int     `json:"stale"`
-		Updating       int     `json:"updating"`
-		Revalidated    int     `json:"revalidated"`
-		Hit            int     `json:"hit"`
-		Scarce         int     `json:"scarce"`
+		InBytes        uint64  `json:"inBytes"`
+		OutBytes       uint64  `json:"outBytes"`
+		Miss           uint64  `json:"miss"`
+		Bypass         uint64  `json:"bypass"`
+		Expired        uint64  `json:"expired"`
+		Stale          uint64  `json:"stale"`
+		Updating       uint64  `json:"updating"`
+		Revalidated    uint64  `json:"revalidated"`
+		Hit            uint64  `json:"hit"`
+		Scarce         uint64  `json:"scarce"`
 	} `json:"overCounts"`
 }
 
