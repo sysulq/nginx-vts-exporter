@@ -183,16 +183,16 @@ func NewExporter(uri string) *Exporter {
 			"requestMsec": newServerMetric("requestMsec", "average of request processing times in milliseconds", []string{"host"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
-			"requests":    newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}),
-			"bytes":       newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
-			"response":    newUpstreamMetric("response", "request response time", []string{"upstream", "backend"}),
-			"requestMsec": newUpstreamMetric("requestMsec", "average of request processing times in milliseconds", []string{"upstream", "backend"}),
+			"requests":     newUpstreamMetric("requests", "requests counter", []string{"upstream", "code"}),
+			"bytes":        newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
+			"responseMsec": newUpstreamMetric("responseMsec", "average of only upstream/backend response processing times in milliseconds", []string{"upstream", "backend"}),
+			"requestMsec":  newUpstreamMetric("requestMsec", "average of request processing times in milliseconds", []string{"upstream", "backend"}),
 		},
 		filterMetrics: map[string]*prometheus.Desc{
-			"requests":    newFilterMetric("requests", "requests counter", []string{"filter", "filterName", "code"}),
-			"bytes":       newFilterMetric("bytes", "request/response bytes", []string{"filter", "filterName", "direction"}),
-			"response":    newFilterMetric("response", "request response time", []string{"filter", "filterName"}),
-			"requestMsec": newFilterMetric("requestMsec", "average of request processing times in milliseconds", []string{"filter", "filterName"}),
+			"requests":     newFilterMetric("requests", "requests counter", []string{"filter", "filterName", "code"}),
+			"bytes":        newFilterMetric("bytes", "request/response bytes", []string{"filter", "filterName", "direction"}),
+			"responseMsec": newFilterMetric("responseMsec", "average of only upstream/backend response processing times in milliseconds", []string{"filter", "filterName"}),
+			"requestMsec":  newFilterMetric("requestMsec", "average of request processing times in milliseconds", []string{"filter", "filterName"}),
 		},
 		cacheMetrics: map[string]*prometheus.Desc{
 			"requests": newCacheMetric("requests", "cache requests counter", []string{"zone", "status"}),
@@ -285,7 +285,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 			inbytes += float64(s.InBytes)
 			outbytes += float64(s.OutBytes)
 
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["response"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["responseMsec"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), name, s.Server)
 		}
 
@@ -302,7 +302,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	// FilterZones
 	for filter, values := range nginxVtx.FilterZones {
 		for name, stat := range values {
-			ch <- prometheus.MustNewConstMetric(e.filterMetrics["response"], prometheus.GaugeValue, float64(stat.ResponseMsec), filter, name)
+			ch <- prometheus.MustNewConstMetric(e.filterMetrics["responseMsec"], prometheus.GaugeValue, float64(stat.ResponseMsec), filter, name)
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requestMsec"], prometheus.GaugeValue, float64(stat.RequestMsec), filter, name)
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.RequestCounter), filter, name, "total")
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.Responses.OneXx), filter, name, "1xx")
