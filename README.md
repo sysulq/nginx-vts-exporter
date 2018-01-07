@@ -126,11 +126,11 @@ nginx_server_cache{host="test.domain.com",status="bypass"} 2
 
 **Metrics details**
 
-Nginx data         | Name                            | Exposed informations
------------------- | ------------------------------- | ------------------------
- **Requests**      | `{NAMESPACE}_filter_requests` | code [2xx, 3xx, 4xx, 5xx and total], filter, filter name
- **Bytes**         | `{NAMESPACE}_filter_bytes`    | direction [in, out], filter, filter name
- **Response time** | `{NAMESPACE}_filter_response` | filter, filter name
+Nginx data         | Name                              | Exposed informations
+------------------ | --------------------------------- | ------------------------
+ **Requests**      | `{NAMESPACE}_filter_requests`     | code [2xx, 3xx, 4xx, 5xx and total], filter, filter name
+ **Bytes**         | `{NAMESPACE}_filter_bytes`        | direction [in, out], filter, filter name
+ **Response time** | `{NAMESPACE}_filter_responseMsec` | filter, filter name
 
 **Metrics output example**
 
@@ -142,7 +142,7 @@ nginx_upstream_requests{code="1xx", filter="country", filterName="BY"} 0
 nginx_upstream_bytes{direction="in", filter="country", filterName="BY"} 0
 
 # Filter Response time
-nginx_upstream_response{filter="country", filterName="BY"} 99
+nginx_upstream_responseMsec{filter="country", filterName="BY"} 99
 ```
 
 
@@ -150,11 +150,11 @@ nginx_upstream_response{filter="country", filterName="BY"} 99
 
 **Metrics details**
 
-Nginx data         | Name                            | Exposed informations     
------------------- | ------------------------------- | ------------------------
- **Requests**      | `{NAMESPACE}_upstream_requests` | code [2xx, 3xx, 4xx, 5xx and total], upstream _(or upstream name)_
- **Bytes**         | `{NAMESPACE}_upstream_bytes`    | direction [in, out], upstream _(or upstream name)_
- **Response time** | `{NAMESPACE}_upstream_response` | backend (or server), in_bytes, out_bytes, upstream _(or upstream name)_
+Nginx data         | Name                                | Exposed informations
+------------------ | ----------------------------------- | ------------------------
+ **Requests**      | `{NAMESPACE}_upstream_requests`     | code [2xx, 3xx, 4xx, 5xx and total], upstream _(or upstream name)_
+ **Bytes**         | `{NAMESPACE}_upstream_bytes`        | direction [in, out], upstream _(or upstream name)_
+ **Response time** | `{NAMESPACE}_upstream_responseMsec` | backend (or server), in_bytes, out_bytes, upstream _(or upstream name)_
 
 **Metrics output example**
 
@@ -166,5 +166,5 @@ nginx_upstream_requests{code="1xx",upstream="XXX-XXXXX-3000"} 0
 nginx_upstream_bytes{direction="in",upstream="XXX-XXXXX-3000"} 0
 
 # Upstream Response time
-nginx_upstream_response{backend="10.2.15.10:3000",upstream="XXX-XXXXX-3000"} 99
+nginx_upstream_responseMsec{backend="10.2.15.10:3000",upstream="XXX-XXXXX-3000"} 99
 ```
