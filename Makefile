@@ -44,7 +44,7 @@ docker:
 
 push:
 	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(TAG)"
-	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	@echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin
 	@docker tag "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
 	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
 
