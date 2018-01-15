@@ -154,7 +154,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(irate(nginx_server_connections[5m])) by (status)",
+              "expr": "nginx_server_connections{status=~\"active|writing|reading|waiting\"}",
               "intervalFactor": 2,
               "legendFormat": "{{ status }}",
               "metric": "nginx_server_connections",
