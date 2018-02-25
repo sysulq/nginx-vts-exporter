@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -346,6 +347,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 func fetchHTTP(uri string, timeout time.Duration) func() (io.ReadCloser, error) {
 	http.DefaultClient.Timeout = timeout
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: *insecure}
 
 	return func() (io.ReadCloser, error) {
 		resp, err := http.DefaultClient.Get(uri)
