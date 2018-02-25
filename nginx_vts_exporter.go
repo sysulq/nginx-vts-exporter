@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,6 +18,7 @@ import (
 )
 
 type NginxVts struct {
+	HostName     string `json:"hostName"`
 	NginxVersion string `json:"nginxVersion"`
 	LoadMsec     int64  `json:"loadMsec"`
 	NowMsec      int64  `json:"nowMsec"`
@@ -141,6 +143,7 @@ type Cache struct {
 type Exporter struct {
 	URI string
 
+	infoMetric                                                  *prometheus.Desc
 	serverMetrics, upstreamMetrics, filterMetrics, cacheMetrics map[string]*prometheus.Desc
 }
 
@@ -174,7 +177,8 @@ func newCacheMetric(metricName string, docString string, labels []string) *prome
 
 func NewExporter(uri string) *Exporter {
 	return &Exporter{
-		URI: uri,
+		URI:        uri,
+		infoMetric: newServerMetric("info", "nginx info", []string{"hostName", "nginxVersion", "uptimeSec"}),
 		serverMetrics: map[string]*prometheus.Desc{
 			"connections": newServerMetric("connections", "nginx connections", []string{"status"}),
 			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code"}),
@@ -236,6 +240,14 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 		log.Println("json.Unmarshal failed", err)
 		return
 	}
+
+	// info
+	uptime := nginxVtx.NowMsec - nginxVtx.LoadMsec
+	up := 0.0
+	if uptime > 0 {
+		up = 1.0
+	}
+	ch <- prometheus.MustNewConstMetric(e.infoMetric, prometheus.GaugeValue, up, nginxVtx.HostName, nginxVtx.NginxVersion, strconv.FormatInt(uptime/1000, 10))
 
 	// connections
 	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Active), "active")

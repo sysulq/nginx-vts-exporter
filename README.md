@@ -90,11 +90,14 @@ For grafana dashboard please see [nginx-vts-exporter dashboard](https://grafana.
 
 Nginx data         | Name                            | Exposed informations     
 ------------------ | ------------------------------- | ------------------------
+ **Info**          | `{NAMESPACE}_server_info`       | hostName, nginxVersion, uptimeSec |
  **Connections**   | `{NAMESPACE}_server_connections`| status [active, reading, writing, waiting, accepted, handled]
 
 **Metrics output example**
 
 ``` txt
+# Server Info
+nginx_server_info{hostName="localhost", nginxVersion="1.11.1", uptimeSec="9527"} 1
 # Server Connections
 nginx_server_connections{status="accepted"} 70606
 ```
