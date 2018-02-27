@@ -96,7 +96,7 @@ Nginx data         | Name                            | Exposed informations
 
 ``` txt
 # Server Info
-nginx_server_info{hostName="localhost", nginxVersion="1.11.1", uptimeSec="9527"} 1
+nginx_server_info{hostName="localhost", nginxVersion="1.11.1"} 9527
 # Server Connections
 nginx_server_connections{status="accepted"} 70606
 ```
