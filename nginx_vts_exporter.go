@@ -243,8 +243,8 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	// info
-	uptime := nginxVtx.NowMsec - nginxVtx.LoadMsec
-	ch <- prometheus.MustNewConstMetric(e.infoMetric, prometheus.GaugeValue, strconv.FormatInt(uptime/1000, 10), nginxVtx.HostName, nginxVtx.NginxVersion)
+	uptime := (nginxVtx.NowMsec - nginxVtx.LoadMsec)/1000
+	ch <- prometheus.MustNewConstMetric(e.infoMetric, prometheus.GaugeValue, float64(uptime), nginxVtx.HostName, nginxVtx.NginxVersion)
 
 	// connections
 	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Active), "active")
