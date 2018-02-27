@@ -179,7 +179,7 @@ func newCacheMetric(metricName string, docString string, labels []string) *prome
 func NewExporter(uri string) *Exporter {
 	return &Exporter{
 		URI:        uri,
-		infoMetric: newServerMetric("info", "nginx info", []string{"hostName", "nginxVersion", "uptimeSec"}),
+		infoMetric: newServerMetric("info", "nginx info", []string{"hostName", "nginxVersion"}),
 		serverMetrics: map[string]*prometheus.Desc{
 			"connections": newServerMetric("connections", "nginx connections", []string{"status"}),
 			"requests":    newServerMetric("requests", "requests counter", []string{"host", "code"}),
@@ -244,11 +244,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 	// info
 	uptime := nginxVtx.NowMsec - nginxVtx.LoadMsec
-	up := 0.0
-	if uptime > 0 {
-		up = 1.0
-	}
-	ch <- prometheus.MustNewConstMetric(e.infoMetric, prometheus.GaugeValue, up, nginxVtx.HostName, nginxVtx.NginxVersion, strconv.FormatInt(uptime/1000, 10))
+	ch <- prometheus.MustNewConstMetric(e.infoMetric, prometheus.GaugeValue, strconv.FormatInt(uptime/1000, 10), nginxVtx.HostName, nginxVtx.NginxVersion)
 
 	// connections
 	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Active), "active")
