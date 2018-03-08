@@ -6,6 +6,8 @@
 
 Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts) stats and exports them via HTTP for Prometheus consumption
 
+To support time related histogram metrics, please refer to [hnlq715/nginx-prometheus-metrics](https://github.com/hnlq715/nginx-prometheus-metrics) or [#43](https://github.com/hnlq715/nginx-vts-exporter/issues/43).
+
 ## Table of Contents
 * [Dependency](#dependency)
 * [Download](#download)
