@@ -242,7 +242,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	}
 
 	// info
-	uptime := (nginxVtx.NowMsec - nginxVtx.LoadMsec)/1000
+	uptime := (nginxVtx.NowMsec - nginxVtx.LoadMsec) / 1000
 	ch <- prometheus.MustNewConstMetric(e.infoMetric, prometheus.GaugeValue, float64(uptime), nginxVtx.HostName, nginxVtx.NginxVersion)
 
 	// connections
@@ -281,32 +281,22 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 	// UpstreamZones
 	for name, upstreamList := range nginxVtx.UpstreamZones {
-		var total, one, two, three, four, five, inbytes, outbytes float64
 		for _, s := range upstreamList {
-			total += float64(s.RequestCounter)
-			one += float64(s.Responses.OneXx)
-			two += float64(s.Responses.TwoXx)
-			three += float64(s.Responses.ThreeXx)
-			four += float64(s.Responses.FourXx)
-			five += float64(s.Responses.FiveXx)
-
-			inbytes += float64(s.InBytes)
-			outbytes += float64(s.OutBytes)
-
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["responseMsec"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), name, s.Server)
 
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, total, name, "total", s.Server)
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, one, name, "1xx", s.Server)
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, two, name, "2xx", s.Server)
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, three, name, "3xx", s.Server)
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, four, name, "4xx", s.Server)
-			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, five, name, "5xx", s.Server)
-		}
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, float64(s.RequestCounter), name, "total", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, float64(s.Responses.OneXx), name, "1xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, float64(s.Responses.TwoXx), name, "2xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, float64(s.Responses.ThreeXx), name, "3xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FourXx), name, "4xx", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requests"], prometheus.CounterValue, float64(s.Responses.FiveXx), name, "5xx", s.Server)
 
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, inbytes, name, "in")
-		ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, outbytes, name, "out")
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, float64(s.InBytes), name, "in", s.Server)
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["bytes"], prometheus.CounterValue, float64(s.OutBytes), name, "out", s.Server)
+		}
 	}
+
 	// FilterZones
 	for filter, values := range nginxVtx.FilterZones {
 		for name, stat := range values {
