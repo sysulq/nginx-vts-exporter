@@ -188,7 +188,7 @@ func NewExporter(uri string) *Exporter {
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
 			"requests":     newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "backend"}),
-			"bytes":        newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction"}),
+			"bytes":        newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction", "backend"}),
 			"responseMsec": newUpstreamMetric("responseMsec", "average of only upstream/backend response processing times in milliseconds", []string{"upstream", "backend"}),
 			"requestMsec":  newUpstreamMetric("requestMsec", "average of request processing times in milliseconds", []string{"upstream", "backend"}),
 		},
