@@ -43,6 +43,8 @@ Binary can be downloaded from [Releases](https://github.com/hnlq715/nginx-vts-ex
 ``` shell
 make
 ```
+OR
+
 #### build in docker
 ``` shell
 make buildindocker
