@@ -2,6 +2,9 @@ GO    := GO15VENDOREXPERIMENT=1 go
 PROMU := $(GOPATH)/bin/promu
 pkgs   = $(shell $(GO) list ./... | grep -v /vendor/)
 
+DOCKER_RUN = docker run --rm -v $(shell pwd):/go/src/github.com/hnlq715/nginx-vts-exporter -w /go/src/github.com/hnlq715/nginx-vts-exporter/
+GOLANG_CONTAINER = golang:1.9
+
 PREFIX                  ?= $(shell pwd)
 BIN_DIR                 ?= $(shell pwd)
 DOCKER_IMAGE_NAME       ?= nginx-vts-exporter
@@ -29,6 +32,9 @@ vet:
 build: promu
 	@echo ">> building binaries"
 	@$(PROMU) build --prefix $(PREFIX)
+	
+buildindocker:
+        $(DOCKER_RUN) -e CGO_ENABLED=0 $(GOLANG_CONTAINER) /bin/bash -c "go get -u github.com/prometheus/promu && go build -a -installsuffix cgo -ldflags \"-w\" -o nginx-vts-exporter *.go"
 
 crossbuild: promu
 	@echo ">> crossbuilding binaries"
