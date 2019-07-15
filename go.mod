@@ -1,4 +1,4 @@
-module nginx-vts-exporter
+module github.com/hnlq715/nginx-vts-exporter
 
 go 1.12
 
