@@ -1,4 +1,4 @@
-GO    := GO15VENDOREXPERIMENT=1 go
+GO    := GO111MODULE=on go
 PROMU := $(GOPATH)/bin/promu
 pkgs   = $(shell $(GO) list ./... | grep -v /vendor/)
 
