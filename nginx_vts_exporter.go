@@ -374,7 +374,7 @@ func main() {
 
 	exporter := NewExporter(*nginxScrapeURI)
 	prometheus.MustRegister(exporter)
-	prometheus.Unregister(prometheus.NewProcessCollector(os.Getpid(), ""))
+	prometheus.Unregister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
 	prometheus.Unregister(prometheus.NewGoCollector())
 
 	http.Handle(*metricsEndpoint, promhttp.Handler())
