@@ -10,13 +10,17 @@ TAG 					:= $(shell echo `if [ "$(TRAVIS_BRANCH)" = "master" ] || [ "$(TRAVIS_BR
 
 all: format build test
 
+info:
+	@echo ">> show project info"
+	@$(PROMU) info
+
 style:
 	@echo ">> checking code style"
 	@! gofmt -d $(shell find . -path ./vendor -prune -o -name '*.go' -print) | grep '^'
 
 test:
 	@echo ">> running tests"
-	@$(GO) test -short $(pkgs)
+	@$(GO) test -mod=vendor -short $(pkgs)
 
 format:
 	@echo ">> formatting code"
@@ -42,6 +46,14 @@ docker:
 	@echo ">> building docker image"
 	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
 
+rpm:
+	@echo ">> building rpm package"
+	@$(PREFIX)/rpm/makerpm.sh rpm
+
+srpm:
+	@echo ">> building rpm package"
+	@$(PREFIX)/rpm/makerpm.sh srpm
+
 push:
 	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(TAG)"
 	@echo $(DOCKER_PASS) | docker login -u "$(DOCKER_USER)" --password-stdin
@@ -63,4 +75,4 @@ github-release:
 		GOARCH=$(subst x86_64,amd64,$(patsubst i%86,386,$(shell uname -m))) \
 		$(GO) get -u github.com/aktau/github-release
 
-.PHONY: all style format build test vet tarball docker promu
+.PHONY: all style format build test vet tarball docker promu rpm srpm

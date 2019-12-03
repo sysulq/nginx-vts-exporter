@@ -1,0 +1,1 @@
+NGINX_VTS_EXPORTER_OPTS='-telemetry.address="localhost:9913"'
