@@ -1,0 +1,49 @@
+%define debug_package %{nil}
+
+Name:              nginx_vts_exporter
+Epoch:             1
+Version:           ${nginx_vts_exporter_version}
+Release:           1%{?dist}
+
+Summary:           Prometheus exporter that exports Nginx VTS stats.
+License:           MIT
+URL:               https://github.com/hnlq715/nginx-vts-exporter
+
+Source0:           nginx_vts_exporter-%{version}.tar.gz
+Source10:          nginx_vts_exporter.service
+Source11:          nginx_vts_exporter.default
+
+BuildRequires:     golang >= 1.11.0
+BuildRequires:     make
+
+%description
+Simple server that scrapes Nginx vts stats and exports them via HTTP for Prometheus consumption
+
+%prep
+%setup -q -n nginx-vts-exporter-%{version}
+%{__cp} %{SOURCE10} %{SOURCE11} .
+
+%build
+export GOPATH=`go env GOPATH` 
+GO111MODULE=on make build
+%{__mv} `make info | grep 'Name:' | sed -E 's/^Name:\s+(.*)$/\1/'` nginx_vts_exporter
+
+%install
+%{__install} -p -m 0755 -d %{buildroot}%{_unitdir}
+%{__install} -p -m 0755 -d %{buildroot}%{_sysconfdir}/default
+%{__install} -p -m 0755 -d %{buildroot}%{_bindir}
+
+%{__install} -p -m 0644 ./nginx_vts_exporter.service %{buildroot}%{_unitdir}/nginx_vts_exporter.service
+%{__install} -m 0755 ./nginx_vts_exporter %{buildroot}%{_bindir}/nginx_vts_exporter 
+%{__install} -p -m 0644 ./nginx_vts_exporter.default %{buildroot}%{_sysconfdir}/default/nginx_vts_exporter
+
+%files
+%{_bindir}/nginx_vts_exporter
+%{_unitdir}/*
+%{_sysconfdir}/*
+
+%preun
+%systemd_preun nginx_vts_exporter.service
+
+%postun
+%systemd_postun

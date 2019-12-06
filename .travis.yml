@@ -8,6 +8,9 @@ language: go
 go:
 - 1.12.5
 
+env:
+- GO111MODULE=on
+
 after_success:
   - make
   - make docker

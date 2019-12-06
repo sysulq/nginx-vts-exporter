@@ -1,0 +1,17 @@
+[Unit]
+
+Description=Prometheus exporter thar exports Nginx VTS stats.
+Documentation=https://github.com/hnlq715/nginx-vts-exporter
+After=network.target
+
+
+[Service]
+
+EnvironmentFile=-/etc/default/nginx_vts_exporter
+User=prometheus
+ExecStart=/usr/bin/nginx_vts_exporter $NGINX_VTS_EXPORTER_OPTS
+Restart=on-failure
+
+
+[Install]
+WantedBy=multi-user.target

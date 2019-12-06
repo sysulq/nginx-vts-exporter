@@ -44,6 +44,11 @@ Binary can be downloaded from [Releases](https://github.com/hnlq715/nginx-vts-ex
 make
 ```
 
+### build RPM package
+``` shell
+make rpm
+```
+
 ### build docker image
 ``` shell
 make docker
