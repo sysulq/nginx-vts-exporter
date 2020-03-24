@@ -1,7 +1,7 @@
 repository:
     path: github.com/hnlq715/nginx-vts-exporter
 build:
-    flags: -a -tags netgo
+    flags: -a -tags netgo -mod=vendor
     ldflags: |
         -X {{repoPath}}/vendor/github.com/prometheus/common/version.Version={{.Version}}
         -X {{repoPath}}/vendor/github.com/prometheus/common/version.Revision={{.Revision}}
