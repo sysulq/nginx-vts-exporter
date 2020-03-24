@@ -377,7 +377,11 @@ func main() {
 	prometheus.MustRegister(exporter)
 
 	if !(*goMetrics) {
-		prometheus.Unregister(prometheus.NewProcessCollector(os.Getpid(), ""))
+		prometheus.Unregister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
+			PidFn: func() (int, error) {
+				return os.Getpid(), nil
+			},
+		}))
 		prometheus.Unregister(prometheus.NewGoCollector())
 	}
 

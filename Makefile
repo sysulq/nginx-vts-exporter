@@ -20,7 +20,7 @@ style:
 
 test:
 	@echo ">> running tests"
-	@$(GO) test -mod=vendor -short $(pkgs)
+	@$(GO) test -short $(pkgs)
 
 format:
 	@echo ">> formatting code"
