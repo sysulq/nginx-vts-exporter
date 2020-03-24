@@ -355,6 +355,7 @@ var (
 	nginxScrapeURI     = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
 	insecure           = flag.Bool("insecure", true, "Ignore server certificate if using https")
 	nginxScrapeTimeout = flag.Int("nginx.scrape_timeout", 2, "The number of seconds to wait for an HTTP response from the nginx.scrape_uri")
+	goMetrics          = flag.Bool("go.metrics", false, "Export process and go metrics.")
 )
 
 func init() {
@@ -374,8 +375,11 @@ func main() {
 
 	exporter := NewExporter(*nginxScrapeURI)
 	prometheus.MustRegister(exporter)
-	prometheus.Unregister(prometheus.NewProcessCollector(os.Getpid(), ""))
-	prometheus.Unregister(prometheus.NewGoCollector())
+
+	if !(*goMetrics) {
+		prometheus.Unregister(prometheus.NewProcessCollector(os.Getpid(), ""))
+		prometheus.Unregister(prometheus.NewGoCollector())
+	}
 
 	http.Handle(*metricsEndpoint, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
