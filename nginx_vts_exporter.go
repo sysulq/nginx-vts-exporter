@@ -175,6 +175,31 @@ func newCacheMetric(metricName string, docString string, labels []string) *prome
 	)
 }
 
+func groupUpstreamsByServer(upstreamList []Upstream) []Upstream {
+	groupedByServer := make([]Upstream, 0)
+	upstreamsMap := make(map[string]int)
+
+	for _, upstream := range upstreamList {
+		if index, exists := upstreamsMap[upstream.Server]; exists {
+			groupedByServer[index].RequestCounter += upstream.RequestCounter
+			groupedByServer[index].InBytes += upstream.InBytes
+			groupedByServer[index].OutBytes += upstream.OutBytes
+			groupedByServer[index].Responses.OneXx += upstream.Responses.OneXx
+			groupedByServer[index].Responses.TwoXx += upstream.Responses.TwoXx
+			groupedByServer[index].Responses.ThreeXx += upstream.Responses.ThreeXx
+			groupedByServer[index].Responses.FourXx += upstream.Responses.FourXx
+			groupedByServer[index].Responses.FiveXx += upstream.Responses.FiveXx
+			groupedByServer[index].RequestMsec = (groupedByServer[index].RequestMsec + upstream.RequestMsec) / 2
+			groupedByServer[index].ResponseMsec = (groupedByServer[index].ResponseMsec + upstream.ResponseMsec) / 2
+		} else {
+			groupedByServer = append(groupedByServer, upstream)
+			upstreamsMap[upstream.Server] = len(groupedByServer) - 1
+		}
+	}
+
+	return groupedByServer
+}
+
 func NewExporter(uri string) *Exporter {
 	return &Exporter{
 		URI:        uri,
@@ -281,7 +306,9 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 
 	// UpstreamZones
 	for name, upstreamList := range nginxVtx.UpstreamZones {
-		for _, s := range upstreamList {
+		groupedUpstreamsByServer := groupUpstreamsByServer(upstreamList)
+
+		for _, s := range groupedUpstreamsByServer {
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["responseMsec"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), name, s.Server)
 
