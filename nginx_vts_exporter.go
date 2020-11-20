@@ -31,6 +31,12 @@ type NginxVts struct {
 		Handled  uint64 `json:"handled"`
 		Requests uint64 `json:"requests"`
 	} `json:"connections"`
+	SharedZones struct {
+		Name     string `json:"name"`
+		MaxSize  uint64 `json:"maxSize"`
+		UsedSize uint64 `json:"usedSize"`
+		UsedNode uint64 `json:"usedNode"`
+	} `json:"sharedZones"`
 	ServerZones   map[string]Server              `json:"serverZones"`
 	UpstreamZones map[string][]Upstream          `json:"upstreamZones"`
 	FilterZones   map[string]map[string]Upstream `json:"filterZones"`
@@ -185,6 +191,7 @@ func NewExporter(uri string) *Exporter {
 			"bytes":       newServerMetric("bytes", "request/response bytes", []string{"host", "direction"}),
 			"cache":       newServerMetric("cache", "cache counter", []string{"host", "status"}),
 			"requestMsec": newServerMetric("requestMsec", "average of request processing times in milliseconds", []string{"host"}),
+			"sharedzones": newServerMetric("sharedzones", "vts module shared memory metrics", []string{"name", "memstat"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
 			"requests":     newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "backend"}),
@@ -253,6 +260,11 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Accepted), "accepted")
 	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Handled), "handled")
 	ch <- prometheus.MustNewConstMetric(e.serverMetrics["connections"], prometheus.GaugeValue, float64(nginxVtx.Connections.Requests), "requests")
+
+	// sharedzones
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["sharedzones"], prometheus.GaugeValue, float64(nginxVtx.SharedZones.MaxSize), nginxVtx.SharedZones.Name, "maxsize")
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["sharedzones"], prometheus.GaugeValue, float64(nginxVtx.SharedZones.UsedSize), nginxVtx.SharedZones.Name, "usedsize")
+	ch <- prometheus.MustNewConstMetric(e.serverMetrics["sharedzones"], prometheus.GaugeValue, float64(nginxVtx.SharedZones.UsedNode), nginxVtx.SharedZones.Name, "usednode")
 
 	// ServerZones
 	for host, s := range nginxVtx.ServerZones {
