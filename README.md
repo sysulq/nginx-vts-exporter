@@ -10,21 +10,32 @@ Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts
 
 To support time related histogram metrics, please refer to [hnlq715/nginx-prometheus-metrics](https://github.com/hnlq715/nginx-prometheus-metrics) or [#43](https://github.com/hnlq715/nginx-vts-exporter/issues/43).
 
+## ANN
+
+It's hard to say that this project is not maintained any longer, and it is recommended to use nginx-vtx-module instead, which supports multiple vhost_traffic_status_display_format, like <json|html|jsonp|prometheus>.
+
+Hope you guys enjoy it, and thanks for all the contributors and the issue finders. 😃
+
 ## Table of Contents
-* [Dependency](#dependency)
-* [Download](#download)
-* [Compile](#compile)
-  * [build binary](#build-binary)
-  * [build docker image](#build-docker-image)
-* [Run](#run)
-  * [run binary](#run-binary)
-  * [run docker image](#run-docker-image)
-* [Environment variables](#environment-variables)
-* [Metrics](#metrics)
-  * [Server main](#server-main)
-  * [Server zones](#server-zones)
-  * [Filter zones](#filter-zones)
-  * [Upstreams](#upstreams)
+- [nginx-vts-exporter](#nginx-vts-exporter)
+  - [ANN](#ann)
+  - [Table of Contents](#table-of-contents)
+  - [Dependency](#dependency)
+  - [Download](#download)
+  - [Compile](#compile)
+    - [build binary](#build-binary)
+    - [build RPM package](#build-rpm-package)
+    - [build docker image](#build-docker-image)
+  - [Docker Hub Image](#docker-hub-image)
+  - [Run](#run)
+    - [run binary](#run-binary)
+    - [run docker](#run-docker)
+  - [Environment variables](#environment-variables)
+  - [Metrics](#metrics)
+    - [Server main](#server-main)
+    - [Server zones](#server-zones)
+    - [Filter zones](#filter-zones)
+    - [Upstreams](#upstreams)
 
 ## Dependency
 
