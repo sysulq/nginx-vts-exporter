@@ -12,7 +12,7 @@ To support time related histogram metrics, please refer to [hnlq715/nginx-promet
 
 ## ANN
 
-It's hard to say that this project is not maintained any longer, and it is recommended to use nginx-vtx-module instead, which supports multiple vhost_traffic_status_display_format, like <json|html|jsonp|prometheus>.
+It's hard to say that this project is not maintained any longer, and it is recommended to use [nginx-vtx-module](https://github.com/vozlt/nginx-module-vts) instead, which supports multiple vhost_traffic_status_display_format, like `<json|html|jsonp|prometheus>`.
 
 Hope you guys enjoy it, and thanks for all the contributors and the issue finders. 😃
 
