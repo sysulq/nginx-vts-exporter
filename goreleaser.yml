@@ -1,0 +1,9 @@
+project_name: nginx-vtx-exporter
+
+builds:
+  - main: .
+    id: "nginx-vtx-exporter"
+    binary: nginx-vtx-exporter
+    goos:
+      - linux
+    goarch: [amd64]

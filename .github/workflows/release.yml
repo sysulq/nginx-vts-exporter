@@ -46,7 +46,7 @@ jobs:
             args: release --rm-dist
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+        
         - name: Build and push Docker image to docker.io
           uses: mr-smithers-excellent/docker-build-push@v6.2
           with:
