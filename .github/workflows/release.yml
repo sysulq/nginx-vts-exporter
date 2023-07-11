@@ -59,8 +59,8 @@ jobs:
         - name: Build and push Docker image to ghcr.io
           uses: mr-smithers-excellent/docker-build-push@v6.2
           with:
-            registry: nginx-vtx-exporter
-            image: ghcr.io
+            registry: ghcr.io
+            image: nginx-vtx-exporter
             multiPlatform: true
             addLatest: true
             directory: .
