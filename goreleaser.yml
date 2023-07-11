@@ -6,4 +6,6 @@ builds:
     binary: nginx-vtx-exporter
     goos:
       - linux
-    goarch: [amd64]
+      - windows
+      - darwin
+    goarch: [amd64, arm64]

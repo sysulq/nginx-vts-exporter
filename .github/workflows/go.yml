@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: ["1.19.x"]
+        go: ["1.20.x"]
 
     steps:
         - name: Set up Go ${{ matrix.go }}
@@ -53,7 +53,7 @@ jobs:
             registry: docker.io
             image: sophos/nginx-vtx-exporter
             multiPlatform: true
-            addLatest: true
+            addLatest: false
             directory: .
             dockerfile: Dockerfile
             username: ${{ secrets.DOCKER_USER }}
@@ -65,7 +65,7 @@ jobs:
             registry: ghcr.io
             image: nginx-vtx-exporter
             multiPlatform: true
-            addLatest: true
+            addLatest: false
             directory: .
             dockerfile: Dockerfile
             username: ${{ github.actor }}
