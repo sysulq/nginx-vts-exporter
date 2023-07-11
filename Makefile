@@ -42,10 +42,6 @@ tarball: promu
 	@echo ">> building release tarball"
 	@$(PROMU) tarball --prefix $(PREFIX) $(BIN_DIR)
 
-docker:
-	@echo ">> building docker image"
-	@docker build -t "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" .
-
 rpm:
 	@echo ">> building rpm package"
 	@$(PREFIX)/rpm/makerpm.sh rpm
@@ -53,12 +49,6 @@ rpm:
 srpm:
 	@echo ">> building rpm package"
 	@$(PREFIX)/rpm/makerpm.sh srpm
-
-push:
-	@echo ">> pushing docker image, $(DOCKER_USER),$(DOCKER_IMAGE_NAME),$(TAG)"
-	@echo $(DOCKER_PASS) | docker login -u "$(DOCKER_USER)" --password-stdin
-	@docker tag "$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)" "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
-	@docker push "$(DOCKER_USER)/$(DOCKER_IMAGE_NAME):$(TAG)"
 
 release: promu github-release
 	@echo ">> pushing binary to github with ghr"
