@@ -40,8 +40,6 @@ jobs:
         - name: Build
           run: |
             make
-            make docker
-            make push
             if [[ -n "${{ github.ref }}" ]]; then make crossbuild release; fi
 
         - name: Build and push Docker image to docker.io
