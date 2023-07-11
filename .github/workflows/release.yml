@@ -40,7 +40,7 @@ jobs:
             # either 'goreleaser' (default) or 'goreleaser-pro'
             distribution: goreleaser
             version: latest
-            args: release --release
+            args: release
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
