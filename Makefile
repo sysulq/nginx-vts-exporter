@@ -1,6 +1,6 @@
 GO    := GO111MODULE=on go
 PROMU := $(GOPATH)/bin/promu
-pkgs   = $(shell $(GO) list ./... | grep -v /vendor/)
+pkgs   = $(shell $(GO) list ./...)
 
 PREFIX                  ?= $(shell pwd)
 BIN_DIR                 ?= $(shell pwd)
@@ -20,7 +20,7 @@ style:
 
 test:
 	@echo ">> running tests"
-	@$(GO) test -mod=vendor -short $(pkgs)
+	@$(GO) test -short $(pkgs)
 
 format:
 	@echo ">> formatting code"
@@ -68,11 +68,11 @@ release: promu github-release
 promu:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
 		GOARCH=$(subst x86_64,amd64,$(patsubst i%86,386,$(shell uname -m))) \
-		$(GO) get -u github.com/prometheus/promu
+		$(GO) install github.com/prometheus/promu@latest
 
 github-release:
 	@GOOS=$(shell uname -s | tr A-Z a-z) \
 		GOARCH=$(subst x86_64,amd64,$(patsubst i%86,386,$(shell uname -m))) \
-		$(GO) get -u github.com/aktau/github-release
+		$(GO) install github.com/aktau/github-release@latest
 
 .PHONY: all style format build test vet tarball docker promu rpm srpm
