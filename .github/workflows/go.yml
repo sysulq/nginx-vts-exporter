@@ -38,6 +38,7 @@ jobs:
 
         - name: Build
           run: |
+            go env
             make
             make docker
             make push
