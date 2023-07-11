@@ -1,6 +1,6 @@
 # nginx-vts-exporter
 
-[![Build Status](https://travis-ci.org/hnlq715/nginx-vts-exporter.svg?branch=master)](https://travis-ci.org/hnlq715/nginx-vts-exporter)
+[![Go](https://github.com/hnlq715/nginx-vts-exporter/actions/workflows/go.yml/badge.svg)](https://github.com/hnlq715/nginx-vts-exporter/actions/workflows/go.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/sophos/nginx-vts-exporter.svg)](https://hub.docker.com/r/sophos/nginx-vts-exporter)
 [![Github All Releases](https://img.shields.io/github/downloads/hnlq715/nginx-vts-exporter/total.svg)](https://github.com/hnlq715/nginx-vts-exporter)
 [![GitHub release](https://img.shields.io/github/release/hnlq715/nginx-vts-exporter.svg)](https://github.com/hnlq715/nginx-vts-exporter)
