@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"flag"
@@ -12,10 +13,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-kod/kod"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 )
+
+//go:generate go run github.com/go-kod/kod/cmd/kod generate .
 
 type NginxVts struct {
 	HostName     string `json:"hostName"`
@@ -374,7 +378,11 @@ func init() {
 	prometheus.MustRegister(version.NewCollector("nginx_vts_exporter"))
 }
 
-func main() {
+type app struct {
+	kod.Implements[kod.Main]
+}
+
+func (*app) run() {
 	flag.Parse()
 
 	if *showVersion {
@@ -413,4 +421,12 @@ func main() {
 	log.Printf("Metrics namespace: %s", *metricsNamespace)
 	log.Printf("Scraping information from : %s", *nginxScrapeURI)
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
+}
+
+func main() {
+	kod.Run(context.Background(), func(ctx context.Context, app *app) error {
+		app.run()
+
+		return nil
+	})
 }
