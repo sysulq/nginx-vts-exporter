@@ -6,6 +6,9 @@
 [![GitHub release](https://img.shields.io/github/release/hnlq715/nginx-vts-exporter.svg)](https://github.com/hnlq715/nginx-vts-exporter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hnlq715/nginx-vts-exporter)](https://goreportcard.com/report/github.com/hnlq715/nginx-vts-exporter)
 
+> nginx-vts-exporter is powered by [Kod](https://github.com/go-kod/kod), which is a dependency injection framework for Go.  
+> It is designed to be simple and easy to use, and to provide a consistent way to manage dependencies across your application.
+
 Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts) stats and exports them via HTTP for Prometheus consumption
 
 To support time related histogram metrics, please refer to [hnlq715/nginx-prometheus-metrics](https://github.com/hnlq715/nginx-prometheus-metrics) or [#43](https://github.com/hnlq715/nginx-vts-exporter/issues/43).
