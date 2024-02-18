@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/go-kod/kod"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 )
@@ -239,7 +239,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	}
 	defer body.Close()
 
-	data, err := ioutil.ReadAll(body)
+	data, err := io.ReadAll(body)
 	if err != nil {
 		log.Println("ioutil.ReadAll failed", err)
 		return
@@ -397,17 +397,17 @@ func (*app) run() {
 	prometheus.MustRegister(exporter)
 
 	if !(*goMetrics) {
-		prometheus.Unregister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
+		prometheus.Unregister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{
 			PidFn: func() (int, error) {
 				return os.Getpid(), nil
 			},
 		}))
-		prometheus.Unregister(prometheus.NewGoCollector())
+		prometheus.Unregister(collectors.NewGoCollector())
 	}
 
 	http.Handle(*metricsEndpoint, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`<html>
+		_, _ = w.Write([]byte(`<html>
 			<head><title>Nginx Exporter</title></head>
 			<body>
 			<h1>Nginx Exporter</h1>
@@ -424,7 +424,7 @@ func (*app) run() {
 }
 
 func main() {
-	kod.Run(context.Background(), func(ctx context.Context, app *app) error {
+	_ = kod.Run(context.Background(), func(ctx context.Context, app *app) error {
 		app.run()
 
 		return nil
