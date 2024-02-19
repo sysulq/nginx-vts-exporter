@@ -46,27 +46,3 @@ jobs:
             args: release --snapshot
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        - name: Build and push Docker image to docker.io
-          uses: mr-smithers-excellent/docker-build-push@v6.2
-          with:
-            registry: docker.io
-            image: sophos/nginx-vtx-exporter
-            multiPlatform: true
-            addLatest: false
-            directory: .
-            dockerfile: Dockerfile
-            username: ${{ secrets.DOCKER_USER }}
-            password: ${{ secrets.DOCKER_PASS }}
-
-        - name: Build and push Docker image to ghcr.io
-          uses: mr-smithers-excellent/docker-build-push@v6.2
-          with:
-            registry: ghcr.io
-            image: nginx-vtx-exporter
-            multiPlatform: true
-            addLatest: false
-            directory: .
-            dockerfile: Dockerfile
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
