@@ -1,17 +1,17 @@
 # nginx-vts-exporter
 
-[![Go](https://github.com/hnlq715/nginx-vts-exporter/actions/workflows/go.yml/badge.svg)](https://github.com/hnlq715/nginx-vts-exporter/actions/workflows/go.yml)
+[![Go](https://github.com/sysulq/nginx-vts-exporter/actions/workflows/go.yml/badge.svg)](https://github.com/sysulq/nginx-vts-exporter/actions/workflows/go.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/sophos/nginx-vts-exporter.svg)](https://hub.docker.com/r/sophos/nginx-vts-exporter)
-[![Github All Releases](https://img.shields.io/github/downloads/hnlq715/nginx-vts-exporter/total.svg)](https://github.com/hnlq715/nginx-vts-exporter)
-[![GitHub release](https://img.shields.io/github/release/hnlq715/nginx-vts-exporter.svg)](https://github.com/hnlq715/nginx-vts-exporter)
-[![Go Report Card](https://goreportcard.com/badge/github.com/hnlq715/nginx-vts-exporter)](https://goreportcard.com/report/github.com/hnlq715/nginx-vts-exporter)
+[![Github All Releases](https://img.shields.io/github/downloads/sysulq/nginx-vts-exporter/total.svg)](https://github.com/sysulq/nginx-vts-exporter)
+[![GitHub release](https://img.shields.io/github/release/sysulq/nginx-vts-exporter.svg)](https://github.com/sysulq/nginx-vts-exporter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sysulq/nginx-vts-exporter)](https://goreportcard.com/report/github.com/sysulq/nginx-vts-exporter)
 
 > nginx-vts-exporter is powered by [Kod](https://github.com/go-kod/kod), which is a dependency injection framework for Go.  
 > It is designed to be simple and easy to use, and to provide a consistent way to manage dependencies across your application.
 
 Simple server that scrapes Nginx [vts](https://github.com/vozlt/nginx-module-vts) stats and exports them via HTTP for Prometheus consumption
 
-To support time related histogram metrics, please refer to [hnlq715/nginx-prometheus-metrics](https://github.com/hnlq715/nginx-prometheus-metrics) or [#43](https://github.com/hnlq715/nginx-vts-exporter/issues/43).
+To support time related histogram metrics, please refer to [sysulq/nginx-prometheus-metrics](https://github.com/sysulq/nginx-prometheus-metrics) or [#43](https://github.com/sysulq/nginx-vts-exporter/issues/43).
 
 ## ANN
 
@@ -48,7 +48,7 @@ Hope you guys enjoy it, and thanks for all the contributors and the issue finder
 
 ## Download
 
-Binary can be downloaded from [Releases](https://github.com/hnlq715/nginx-vts-exporter/releases) page.
+Binary can be downloaded from [Releases](https://github.com/sysulq/nginx-vts-exporter/releases) page.
 
 ## Compile
 
