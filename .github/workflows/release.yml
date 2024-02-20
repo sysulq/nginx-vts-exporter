@@ -45,7 +45,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
         - name: Build and push Docker image to docker.io
-          uses: mr-smithers-excellent/docker-build-push@v6.2
+          uses: mr-smithers-excellent/docker-build-push@v6.3
           with:
             registry: docker.io
             image: sophos/nginx-vtx-exporter
@@ -57,7 +57,7 @@ jobs:
             password: ${{ secrets.DOCKER_PASS }}
 
         - name: Build and push Docker image to ghcr.io
-          uses: mr-smithers-excellent/docker-build-push@v6.2
+          uses: mr-smithers-excellent/docker-build-push@v6.3
           with:
             registry: ghcr.io
             image: nginx-vtx-exporter
