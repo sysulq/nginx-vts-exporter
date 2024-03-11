@@ -1,7 +1,7 @@
 module github.com/hnlq715/nginx-vts-exporter
 
 require (
-	github.com/go-kod/kod v0.1.0
+	github.com/go-kod/kod v0.3.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/prometheus/common v0.49.0
 )
@@ -28,8 +28,8 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.18.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	go.opentelemetry.io/otel v1.22.0 // indirect
-	go.opentelemetry.io/otel/trace v1.22.0 // indirect
+	go.opentelemetry.io/otel v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
 	golang.org/x/mod v0.15.0 // indirect

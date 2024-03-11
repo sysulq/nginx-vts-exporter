@@ -12,10 +12,10 @@ import (
 
 func init() {
 	kod.Register(&kod.Registration{
-		Name:  "github.com/go-kod/kod/Main",
-		Iface: reflect.TypeOf((*kod.Main)(nil)).Elem(),
-		Impl:  reflect.TypeOf(app{}),
-		Refs:  ``,
+		Name:      "github.com/go-kod/kod/Main",
+		Interface: reflect.TypeOf((*kod.Main)(nil)).Elem(),
+		Impl:      reflect.TypeOf(app{}),
+		Refs:      ``,
 		LocalStubFn: func(ctx context.Context, info *kod.LocalStubFnInfo) any {
 			var interceptors []kod.Interceptor
 			if h, ok := info.Impl.(interface{ Interceptors() []kod.Interceptor }); ok {
