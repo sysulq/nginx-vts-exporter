@@ -3,7 +3,7 @@ module github.com/hnlq715/nginx-vts-exporter
 require (
 	github.com/go-kod/kod v0.4.0
 	github.com/prometheus/client_golang v1.19.1
-	github.com/prometheus/common v0.49.0
+	github.com/prometheus/common v0.53.0
 )
 
 require (
