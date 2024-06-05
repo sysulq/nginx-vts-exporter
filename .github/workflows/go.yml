@@ -38,7 +38,7 @@ jobs:
               ${{ runner.os }}-go-${{ matrix.go-version }}-
 
         - name: Run GoReleaser
-          uses: goreleaser/goreleaser-action@v5
+          uses: goreleaser/goreleaser-action@v6
           with:
             # either 'goreleaser' (default) or 'goreleaser-pro'
             distribution: goreleaser
