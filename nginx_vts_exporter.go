@@ -15,6 +15,7 @@ import (
 	"github.com/go-kod/kod"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
+	cversion "github.com/prometheus/client_golang/prometheus/collectors/version"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/version"
 )
@@ -375,7 +376,7 @@ var (
 )
 
 func init() {
-	prometheus.MustRegister(version.NewCollector("nginx_vts_exporter"))
+	prometheus.MustRegister(cversion.NewCollector("nginx_vts_exporter"))
 }
 
 type app struct {
