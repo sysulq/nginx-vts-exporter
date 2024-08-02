@@ -15,8 +15,8 @@ github.com/frankban/quicktest v1.14.6 h1:7Xjx+VpznH+oBnejlPUj8oUpdxnVs4f8XU8WnHk
 github.com/frankban/quicktest v1.14.6/go.mod h1:4ptaffx2x8+WTWXmUCuVU6aPUX1/Mz7zb5vbUoiM6w0=
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
 github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
-github.com/go-kod/kod v0.12.0 h1:IROGdTPJvr7qe/h5wc6RbKq6my1Dqx3NGRkcr6nApIQ=
-github.com/go-kod/kod v0.12.0/go.mod h1:lu9GHy2v7LRFF0jOMolaO3YCeWoSQ832fv3E5RziR2Y=
+github.com/go-kod/kod v0.13.0 h1:RLWCRGxQlDERiJD9HtUoatJrBcvh9M2G4aFWPtSn+h8=
+github.com/go-kod/kod v0.13.0/go.mod h1:lu9GHy2v7LRFF0jOMolaO3YCeWoSQ832fv3E5RziR2Y=
 github.com/go-logr/logr v1.2.2/go.mod h1:jdQByPbusPIv2/zmleS9BjJVeZ6kBagPoEUsqbVz/1A=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=
 github.com/go-logr/logr v1.4.2/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
