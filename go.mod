@@ -2,7 +2,7 @@ module github.com/hnlq715/nginx-vts-exporter
 
 require (
 	github.com/go-kod/kod v0.14.0
-	github.com/prometheus/client_golang v1.20.2
+	github.com/prometheus/client_golang v1.20.3
 	github.com/prometheus/common v0.58.0
 )
 
