@@ -10,6 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/go-kod/kod"
@@ -152,7 +154,8 @@ type Cache struct {
 }
 
 type Exporter struct {
-	URI string
+	URI       string
+	uriFilter *regexp.Regexp
 
 	infoMetric                                                  *prometheus.Desc
 	serverMetrics, upstreamMetrics, filterMetrics, cacheMetrics map[string]*prometheus.Desc
@@ -186,9 +189,10 @@ func newCacheMetric(metricName string, docString string, labels []string) *prome
 	)
 }
 
-func NewExporter(uri string) *Exporter {
+func NewExporter(uri string, uriFilter *regexp.Regexp) *Exporter {
 	return &Exporter{
 		URI:        uri,
+		uriFilter:  uriFilter,
 		infoMetric: newServerMetric("info", "nginx info", []string{"hostName", "nginxVersion"}),
 		serverMetrics: map[string]*prometheus.Desc{
 			"connections": newServerMetric("connections", "nginx connections", []string{"status"}),
@@ -215,6 +219,25 @@ func NewExporter(uri string) *Exporter {
 			"bytes":    newCacheMetric("bytes", "cache request/response bytes", []string{"zone", "direction"}),
 		},
 	}
+}
+
+func (e *Exporter) allowFilterMetric(filter, name string) bool {
+	if e.uriFilter == nil || !strings.HasPrefix(filter, "uri::") {
+		return true
+	}
+
+	route := name
+	if i := strings.IndexByte(route, '/'); i >= 0 {
+		route = route[i:]
+	}
+	if i := strings.IndexByte(route, '?'); i >= 0 {
+		route = route[:i]
+	}
+	if route == "" {
+		route = "/"
+	}
+
+	return e.uriFilter.MatchString(route)
 }
 
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
@@ -317,6 +340,10 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	// FilterZones
 	for filter, values := range nginxVtx.FilterZones {
 		for name, stat := range values {
+			if !e.allowFilterMetric(filter, name) {
+				continue
+			}
+
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["responseMsec"], prometheus.GaugeValue, float64(stat.ResponseMsec), filter, name)
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requestMsec"], prometheus.GaugeValue, float64(stat.RequestMsec), filter, name)
 			ch <- prometheus.MustNewConstMetric(e.filterMetrics["requests"], prometheus.CounterValue, float64(stat.RequestCounter), filter, name, "total")
@@ -372,6 +399,7 @@ var (
 	nginxScrapeURI     = flag.String("nginx.scrape_uri", "http://localhost/status", "URI to nginx stub status page")
 	insecure           = flag.Bool("insecure", true, "Ignore server certificate if using https")
 	nginxScrapeTimeout = flag.Int("nginx.scrape_timeout", 2, "The number of seconds to wait for an HTTP response from the nginx.scrape_uri")
+	nginxFilterURI     = flag.String("nginx.filter-uri", "", "Regexp for filtering uri::* vts filter zones by route path")
 	goMetrics          = flag.Bool("go.metrics", false, "Export process and go metrics.")
 )
 
@@ -394,7 +422,17 @@ func (*app) run() {
 	log.Printf("Starting nginx_vts_exporter %s", version.Info())
 	log.Printf("Build context %s", version.BuildContext())
 
-	exporter := NewExporter(*nginxScrapeURI)
+	var uriFilter *regexp.Regexp
+	if *nginxFilterURI != "" {
+		var err error
+		uriFilter, err = regexp.Compile(*nginxFilterURI)
+		if err != nil {
+			log.Fatalf("invalid -nginx.filter-uri value %q: %v", *nginxFilterURI, err)
+		}
+		log.Printf("Applying uri::* filter regexp: %s", *nginxFilterURI)
+	}
+
+	exporter := NewExporter(*nginxScrapeURI, uriFilter)
 	prometheus.MustRegister(exporter)
 
 	if !(*goMetrics) {
