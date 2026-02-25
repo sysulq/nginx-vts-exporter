@@ -82,6 +82,29 @@ It can be used directly instead of having to build the image yourself.
 nohup /bin/nginx-vts-exporter -nginx.scrape_uri=http://localhost/status/format/json
 ```
 
+Filter `uri::*` vts routes with regexp (`-nginx.filter-uri`).
+The regexp is matched against route path only (without host and query string):
+
+``` shell
+/usr/local/bin/nginx-vts-exporter \
+  -nginx.scrape_uri=http://127.0.0.1:8080/nginx_status \
+  -telemetry.address=:9913 \
+  -nginx.filter-uri="^/[^/]+(/[^/]+)?/?$"
+```
+
+Examples:
+
+``` shell
+# one or two path segments: /a, /a/b
+-nginx.filter-uri="^/[^/]+(/[^/]+)?/?$"
+
+# only /route and /auth/login
+-nginx.filter-uri="^(/route|/auth/login)/?$"
+
+# /route and everything under it
+-nginx.filter-uri="^/route(/.*)?$"
+```
+
 ### run docker
 ```
 docker run  -ti --rm --env NGINX_STATUS="http://localhost/status/format/json" sophos/nginx-vts-exporter
