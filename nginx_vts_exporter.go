@@ -186,6 +186,13 @@ func newCacheMetric(metricName string, docString string, labels []string) *prome
 	)
 }
 
+func boolToFloat64(b bool) float64 {
+    if b {
+        return 1.0
+    }
+    return 0.0
+}
+
 func NewExporter(uri string) *Exporter {
 	return &Exporter{
 		URI:        uri,
@@ -199,6 +206,7 @@ func NewExporter(uri string) *Exporter {
 			"sharedzones": newServerMetric("sharedzones", "vts module shared memory metrics", []string{"name", "memstat"}),
 		},
 		upstreamMetrics: map[string]*prometheus.Desc{
+			"up":     		newUpstreamMetric("up", "upstream live status", []string{"upstream", "backend"}),
 			"requests":     newUpstreamMetric("requests", "requests counter", []string{"upstream", "code", "backend"}),
 			"bytes":        newUpstreamMetric("bytes", "request/response bytes", []string{"upstream", "direction", "backend"}),
 			"responseMsec": newUpstreamMetric("responseMsec", "average of only upstream/backend response processing times in milliseconds", []string{"upstream", "backend"}),
@@ -299,6 +307,8 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	// UpstreamZones
 	for name, upstreamList := range nginxVtx.UpstreamZones {
 		for _, s := range upstreamList {
+			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["up"], prometheus.GaugeValue, boolToFloat64(!s.Down), name, s.Server)
+
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["responseMsec"], prometheus.GaugeValue, float64(s.ResponseMsec), name, s.Server)
 			ch <- prometheus.MustNewConstMetric(e.upstreamMetrics["requestMsec"], prometheus.GaugeValue, float64(s.RequestMsec), name, s.Server)
 
